@@ -1890,23 +1890,12 @@
         <node-mapping inputPath="/input" outputPath="/nant:RDF/nao:Archiefeenheid/rdfs:label">
           <groovy-code>
             <string>if (_input.dcsubjectrecordsoort_)</string>
-            <string>"${_input.dcsubjectaet_}:${_uniqueIdentifier}"</string>
+            <string>"Archiefeenheid"</string>
           </groovy-code>
         </node-mapping>			
       </elem>						
       <elem attrs="xml:lang" tag="skos:prefLabel"/>
       <elem attrs="xml:lang" tag="skos:altLabel"/>
-      <elem attrs="rdf:resource,xml:lang" tag="nao:isArchiefeenheidtype">
-		<node-mapping inputPath="/input" outputPath="/nant:RDF/nao:Archiefeenheid/nao:isArchiefeenheidtype">
-		  <groovy-code>
-			<string>if (_input.dcsubjectarchiefeenheidstype_) {</string>
-			<string>&quot;${dcsubjectarchiefeenheidstype_}&quot;.capitalize()</string>
-			<string>} else {</string>
-			<string>&quot;${_input.dcsubjectaet_}&quot;.capitalize()</string>
-			<string>}</string>
-		  </groovy-code>
-		</node-mapping>  
-	  </elem>
       <elem attrs="rdf:resource" tag="foaf:isPrimaryTopicOf"/>
       <elem attrs="xml:lang" tag="nao:archiefbloknummer"/>			
       <elem attrs="xml:lang" tag="nao:inventarisnummer"/>
@@ -2030,6 +2019,7 @@
       <elem attrs="xml:lang" tag="skos:prefLabel"/>
       <elem attrs="xml:lang" tag="nav:bijzonderheden"/>
       <elem attrs="xml:lang" tag="nav:verwijzing"/>
+	  <elem attrs="xml:lang, rdf:resource" tag="nav:heeftBoedel"/>
     </elem>		
 	
 	<!-- Decreetbeschrijving -->
