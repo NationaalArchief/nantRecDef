@@ -1,0 +1,3150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record-definition flat="false" prefix="nant" version="0.0.5">
+  <namespaces>
+    <namespace prefix="bf" uri="http://id.loc.gov/ontologies/bibframe/"/>
+    <namespace prefix="cs" uri="http://www.kulttuurisampo.fi/ebkr/"/>
+    <namespace prefix="dc" uri="http://purl.org/dc/elements/1.1/"/>
+    <namespace prefix="dct" uri="http://purl.org/dc/terms/"/>		
+    <namespace prefix="geo" uri="http://www.opengis.net/ont/geosparql#"/>
+    <namespace prefix="hg" uri="http://rdf.histograph.io/"/>
+    <namespace prefix="sd" uri="http://www.w3.org/ns/sparql-service-description#"/>
+    <namespace prefix="vs" uri="http://www.w3.org/2003/06/sw-vocab-status/ns#"/>
+    <namespace prefix="dbo" uri="http://dbpedia.org/ontology/"/>
+    <namespace prefix="edm" uri="http://www.europeana.eu/schemas/edm/"/>
+    <namespace prefix="naa" uri="https://archief.nl/def/"/>
+    <namespace prefix="nant" uri="https://archief.nl/def/"/>
+    <namespace prefix="nao" uri="https://archief.nl/def/ontologie/"/>
+    <namespace prefix="nav" uri="https://archief.nl/def/vocabulaire/"/>
+    <namespace prefix="pnv" uri="https://w3id.org/pnv#"/>
+    <namespace prefix="ore" uri="http://www.openarchives.org/ore/terms/"/>
+    <namespace prefix="org" uri="http://www.w3.org/ns/org#"/>
+    <namespace prefix="owl" uri="http://www.w3.org/2002/07/owl#"/>
+    <namespace prefix="rdf" uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+    <namespace prefix="sem" uri="http://semanticweb.cs.vu.nl/2009/11/sem/"/>
+    <namespace prefix="xml" uri="http://www.w3.org/XML/1998/namespace"/>
+    <namespace prefix="xsd" uri="http://www.w3.org/2001/XMLSchema#"/>
+    <namespace prefix="dcat" uri="https://www.w3.org/TR/vocab-dcat-2/"/>
+    <namespace prefix="foaf" uri="http://xmlns.com/foaf/0.1/"/>
+    <namespace prefix="iiif" uri="http://iiif.io/api/image/2#"/>
+    <namespace prefix="prov" uri="http://www.w3.org/ns/prov#"/>
+    <namespace prefix="rdfs" uri="http://www.w3.org/2000/01/rdf-schema#"/>
+    <namespace prefix="skos" uri="http://www.w3.org/2004/02/skos/core#"/>
+    <namespace prefix="svcs" uri="http://rdfs.org/sioc/services#"/>
+    <namespace prefix="void" uri="http://rdfs.org/ns/void#"/>
+    <namespace prefix="vcard" uri="http://www.w3.org/2006/vcard/ns#"/>
+    <namespace prefix="frbroo" uri="http://iflastandards.info/ns/fr/frbr/frbroo/"/>
+    <namespace prefix="premis" uri="http://www.loc.gov/premis/rdf/v3/"/>
+    <namespace prefix="schema" uri="http://schema.org/"/>
+    <namespace prefix="dcterms" uri="http://purl.org/dc/terms/"/>
+    <namespace prefix="eac-cpf" uri="http://www3.iath.virginia.edu/eac/cpf/"/>
+    <namespace prefix="ebucore" uri="http://www.ebu.ch/metadata/ontologies/ebucore/ebucore#"/>
+    <namespace prefix="cidoc-crm" uri="http://www.cidoc-crm.org/cidoc-crm/"/>
+    <namespace prefix="frbr_core" uri="http://purl.org/vocab/frbr/core#"/>
+    <namespace prefix="odrl" uri="http://www.w3.org/ns/odrl/2/"/>
+    <namespace prefix="adms" uri="http://www.w3.org/ns/adms#"/>
+    <namespace prefix="ov" uri="http://open.vocab.org/terms/"/>
+    <namespace prefix="agrl" uri="http://d-nb.info/standards/elementset/agrelon#"/>
+  </namespaces>
+  <functions>
+    <mapping-function name="validUUID">
+      <sample-input>
+        <string>e3daa347-0528-4ece-b9bd-fae01a0f2e73</string>
+        <string>e3daa347-0528-4ece-b9bd-fae01a0f2e7k</string>
+      </sample-input>
+      <groovy-code>
+        <string>def matcher = "${it}" =~ /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/</string>
+        <string>matcher.matches()</string>
+      </groovy-code>
+    </mapping-function>
+    <mapping-function name="createOreAggregationUri">
+      <sample-input>
+        <string>00001</string>
+      </sample-input>
+      <groovy-code>
+        <string>"${baseUrl}/resource/aggregation/${spec}/${_uniqueIdentifier.sanitizeURI()}"</string>
+      </groovy-code>
+    </mapping-function>
+    <mapping-function name="createEDMAgentUri">
+      <groovy-code>
+        <string>StringBuilder out = new StringBuilder()</string>
+        <string>for (char c : it.toString().chars) {</string>
+        <string>switch (c) {</string>
+        <string>case ' ':</string>
+        <string>out.append('%20')</string>
+        <string>break;</string>
+        <string>case '[':</string>
+        <string>out.append('%5B')</string>
+        <string>break;</string>
+        <string>case ']':</string>
+        <string>out.append('%5D')</string>
+        <string>break;</string>
+        <string>case '\\':</string>
+        <string>out.append('%5C')</string>
+        <string>break;</string>
+        <string>default:</string>
+        <string>out.append(c);</string>
+        <string>}</string>
+        <string>}</string>
+        <string>identifier = out.toString()</string>
+        <string>"${baseUrl}/resource/agent/${spec}/${identifier}"</string>
+      </groovy-code>
+    </mapping-function>
+    <mapping-function name="createEDMPlaceUri">
+      <groovy-code>
+        <string>StringBuilder out = new StringBuilder()</string>
+        <string>for (char c : it.toString().chars) {</string>
+        <string>switch (c) {</string>
+        <string>case ' ':</string>
+        <string>out.append('%20')</string>
+        <string>break;</string>
+        <string>case '[':</string>
+        <string>out.append('%5B')</string>
+        <string>break;</string>
+        <string>case ']':</string>
+        <string>out.append('%5D')</string>
+        <string>break;</string>
+        <string>case '\\':</string>
+        <string>out.append('%5C')</string>
+        <string>break;</string>
+        <string>default:</string>
+        <string>out.append(c);</string>
+        <string>}</string>
+        <string>}</string>
+        <string>identifier = out.toString()</string>
+        <string>"${baseUrl}/resource/place/${spec}/${identifier}"</string>
+      </groovy-code>
+    </mapping-function>
+    <mapping-function name="lowercase">
+      <sample-input>
+        <string>Bla bla</string>
+        <string>BLA bla bla</string>
+      </sample-input>
+      <groovy-code>
+        <string>"${it.toString().toLowerCase()}"</string>
+      </groovy-code>
+    </mapping-function>
+    <mapping-function name="reverseNames">
+      <sample-input>
+        <string>Sjoerd Siebinga</string>
+        <string>Siebinga, Sjoerd</string>
+        <string>Siebinga, Sjoerd Michiel</string>
+      </sample-input>
+      <groovy-code>
+        <string>kwrd = "${it}".replaceAll('[^|,-_a-zA-Z0-9]','')</string>
+        <string>parts = kwrd.toString().split(",")</string>
+        <string>if (parts.length &gt; 1) {</string>
+        <string>"${parts[1].trim()} ${parts[0]}"</string>
+        <string>}</string>
+        <string>else {</string>
+        <string>"${it}"</string>
+        <string>}</string>
+      </groovy-code>
+    </mapping-function>
+    <mapping-function name="smallThumbnail">
+      <groovy-code>
+        <string>"http://media.delving.org/thumbnail/${spec}/${it.replaceAll('^.*[\\/|\\\\]','').replaceAll('(?i)\\.jpg|\\.jpeg|\\.tif|\\.tiff|\\.png|\\.gif', '')}/180"</string>
+      </groovy-code>
+    </mapping-function>
+    <mapping-function name="createNTURI">
+      <sample-input>
+        <string>lkjljk</string>
+      </sample-input>
+      <groovy-code>
+        <string>def utmOut = false</string>
+        <string>String string = it.toString()</string>
+        <string>if (string == '') {</string>
+        <string>""</string>
+        <string>}</string>
+        <string>else {</string>
+        <string>"nt00001"</string>
+        <string>}</string>
+      </groovy-code>
+    </mapping-function>
+    
+<!-- 27 oktober 2020 - urilify archiefLink -->
+    <mapping-function name="NA_archiefLink">
+      <sample-input>
+        <string>NL-HaNA/3.03.01.01/4271////01</string>
+        <string>NL-HaNA/1.08.11/7318// fol. CCCXVIII//</string>
+        <string>NL-HaNA/1.08.11/7318// fol. XCII vo//</string>
+      </sample-input>
+      <groovy-code>
+        <string>"${it}".replaceAll('[ /]','_')</string>
+      </groovy-code>
+    </mapping-function>
+    <mapping-function name="NA_createNARefByUri">
+      <groovy-code>
+        <string>StringBuilder out = new StringBuilder()</string>
+        <string>for (char c : it.toString().chars) {</string>
+        <string>switch (c) {</string>
+        <string>case ' ':</string>
+        <string>out.append('%20')</string>
+        <string>break;</string>
+        <string>case '[':</string>
+        <string>out.append('%5B')</string>
+        <string>break;</string>
+        <string>case ']':</string>
+        <string>out.append('%5D')</string>
+        <string>break;</string>
+        <string>case '\\':</string>
+        <string>out.append('%5C')</string>
+        <string>break;</string>
+        <string>default:</string>
+        <string>out.append(c);</string>
+        <string>}</string>
+        <string>}</string>
+        <string>identifier = out.toString()</string>
+        <string>code = "${spec}"</string>
+        <string>it = code.substring(0,7)</string>
+        <string>"${baseUrl}/naderetoegang/doc/${it}/${identifier}"</string>
+      </groovy-code>
+    </mapping-function>
+    <mapping-function name="NA_giveNTCODE">
+      <groovy-code>
+        <string>code = "${spec}"</string>
+        <string>it = code.substring(0,7)</string>
+      </groovy-code>
+    </mapping-function>
+    <mapping-function name="NA_urilify">
+      <sample-input>
+        <string>kkjhdf lkjj(d)f[l]k.kj'fHaneGra%af</string>
+      </sample-input>
+      <groovy-code>
+        <string>StringBuilder out = new StringBuilder()</string>
+        <string>for (char c : it.toString().chars) {</string>
+        <string>switch (c) {</string>
+        <string>case ' ':</string>
+        <string>out.append('_')</string>
+        <string>break;</string>
+        <string>case '.':</string>
+        <string>out.append('')</string>
+        <string>break;</string>
+        <string>case ']':</string>
+        <string>out.append('')</string>
+        <string>break;</string>
+        <string>case '\\':</string>
+        <string>out.append('_')</string>
+        <string>break;</string>
+        <string>case '(':</string>
+        <string>out.append('')</string>
+        <string>break;</string>
+        <string>case ']':</string>
+        <string>out.append('')</string>
+        <string>break;</string>
+        <string>case '[':</string>
+        <string>out.append('')</string>
+        <string>break;</string>
+        <string>case ')':</string>
+        <string>out.append('')</string>
+        <string>break;</string>
+        <string>case '\'':</string>
+        <string>out.append('')</string>
+        <string>break;</string>
+        <string>case '%':</string>
+        <string>out.append('')</string>
+        <string>break;</string>
+        
+<!--Toevoeging GK 20181018: komma , hekje # en & eruit gestript-->
+        <string>case ',':</string>
+        <string>out.append('')</string>
+        <string>break;</string>
+        <string>case '#':</string>
+        <string>out.append('')</string>
+        <string>break;</string>
+        <string>case '&amp;':</string>
+        <string>out.append('')</string>
+        <string>break;</string>
+        
+<!-- replace {} -->
+        <string>case '{':</string>
+        <string>out.append('')</string>
+        <string>break;</string>
+        <string>case '}':</string>
+        <string>out.append('')</string>
+        <string>break;</string>
+        
+<!-- replace > character -->
+        <string>case '&gt;':</string>
+        <string>out.append('')</string>
+        <string>break;</string>
+        
+<!-- replace special characters -->
+        
+<!-- Àà · Áá · Ââ · Ää · Ãã · Āā · Ąą · Ăă · Ǎǎ  -->
+        <string>case 'À':</string>
+        <string>out.append('A')</string>
+        <string>break;</string>
+        <string>case 'à':</string>
+        <string>out.append('a')</string>
+        <string>break;</string>
+        <string>case 'Â':</string>
+        <string>out.append('A')</string>
+        <string>break;</string>
+        <string>case 'á':</string>
+        <string>out.append('a')</string>
+        <string>break;</string>
+        <string>case 'Ã':</string>
+        <string>out.append('A')</string>
+        <string>break;</string>
+        <string>case 'â':</string>
+        <string>out.append('a')</string>
+        <string>break;</string>
+        <string>case 'Ā':</string>
+        <string>out.append('A')</string>
+        <string>break;</string>
+        <string>case 'ä':</string>
+        <string>out.append('a')</string>
+        <string>break;</string>
+        <string>case 'Ą':</string>
+        <string>out.append('A')</string>
+        <string>break;</string>
+        <string>case 'ą':</string>
+        <string>out.append('a')</string>
+        <string>break;</string>
+        <string>case 'ã':</string>
+        <string>out.append('a')</string>
+        <string>break;</string>
+        <string>case 'Ă':</string>
+        <string>out.append('A')</string>
+        <string>break;</string>
+        <string>case 'ă':</string>
+        <string>out.append('a')</string>
+        <string>break;</string>
+        <string>case 'Ǎ':</string>
+        <string>out.append('A')</string>
+        <string>break;</string>
+        <string>case 'ǎ':</string>
+        <string>out.append('a')</string>
+        <string>break;</string>
+        
+<!-- Çç · Ĉĉ · Čč · Ćć  -->
+        <string>case 'Ç':</string>
+        <string>out.append('C')</string>
+        <string>break;</string>
+        <string>case 'ç':</string>
+        <string>out.append('c')</string>
+        <string>break;</string>
+        <string>case 'Ĉ':</string>
+        <string>out.append('C')</string>
+        <string>break;</string>
+        <string>case 'ĉ':</string>
+        <string>out.append('c')</string>
+        <string>break;</string>
+        <string>case 'Č':</string>
+        <string>out.append('C')</string>
+        <string>break;</string>
+        <string>case 'č':</string>
+        <string>out.append('c')</string>
+        <string>break;</string>
+        <string>case 'Ć':</string>
+        <string>out.append('C')</string>
+        <string>break;</string>
+        <string>case 'ć':</string>
+        <string>out.append('c')</string>
+        <string>break;</string>
+        
+<!-- Đđ · Ďď  -->
+        <string>case 'Đ':</string>
+        <string>out.append('D')</string>
+        <string>break;</string>
+        <string>case 'đ':</string>
+        <string>out.append('d')</string>
+        <string>break;</string>
+        <string>case 'Ď':</string>
+        <string>out.append('D')</string>
+        <string>break;</string>
+        <string>case 'ď':</string>
+        <string>out.append('d')</string>
+        <string>break;</string>
+        
+<!-- Èè · Éé · Êê · Ëë · Ęę · Ēē · Ĕĕ · Ėė · Ěě	 -->
+        <string>case 'È':</string>
+        <string>out.append('E')</string>
+        <string>break;</string>
+        <string>case 'è':</string>
+        <string>out.append('e')</string>
+        <string>break;</string>
+        <string>case 'É':</string>
+        <string>out.append('E')</string>
+        <string>break;</string>
+        <string>case 'é':</string>
+        <string>out.append('e')</string>
+        <string>break;</string>
+        <string>case 'Ê':</string>
+        <string>out.append('E')</string>
+        <string>break;</string>
+        <string>case 'ê':</string>
+        <string>out.append('e')</string>
+        <string>break;</string>
+        <string>case 'Ë':</string>
+        <string>out.append('E')</string>
+        <string>break;</string>
+        <string>case 'ë':</string>
+        <string>out.append('e')</string>
+        <string>break;</string>
+        <string>case 'Ę':</string>
+        <string>out.append('E')</string>
+        <string>break;</string>
+        <string>case 'ę':</string>
+        <string>out.append('e')</string>
+        <string>break;</string>
+        <string>case 'Ē':</string>
+        <string>out.append('E')</string>
+        <string>break;</string>
+        <string>case 'ē':</string>
+        <string>out.append('e')</string>
+        <string>break;</string>
+        <string>case 'Ė':</string>
+        <string>out.append('E')</string>
+        <string>break;</string>
+        <string>case 'ė':</string>
+        <string>out.append('e')</string>
+        <string>break;</string>
+        <string>case 'Ě':</string>
+        <string>out.append('E')</string>
+        <string>break;</string>
+        <string>case 'ě':</string>
+        <string>out.append('e')</string>
+        <string>break;</string>
+        
+<!--  Ĝĝ · Ğğ · Ġġ · Ģģ · Ǧǧ -->
+        <string>case 'Ĝ':</string>
+        <string>out.append('G')</string>
+        <string>break;</string>
+        <string>case 'ĝ':</string>
+        <string>out.append('g')</string>
+        <string>break;</string>
+        <string>case 'Ğ':</string>
+        <string>out.append('G')</string>
+        <string>break;</string>
+        <string>case 'ğ':</string>
+        <string>out.append('g')</string>
+        <string>break;</string>
+        <string>case 'Ġ':</string>
+        <string>out.append('G')</string>
+        <string>break;</string>
+        <string>case 'ġ':</string>
+        <string>out.append('g')</string>
+        <string>break;</string>
+        <string>case 'Ģ':</string>
+        <string>out.append('G')</string>
+        <string>break;</string>
+        <string>case 'ģ':</string>
+        <string>out.append('g')</string>
+        <string>break;</string>
+        <string>case 'Ǧ':</string>
+        <string>out.append('G')</string>
+        <string>break;</string>
+        <string>case 'ǧ':</string>
+        <string>out.append('g')</string>
+        <string>break;</string>
+        
+<!-- Ĥĥ · Ħħ -->
+        <string>case 'Ĥ':</string>
+        <string>out.append('H')</string>
+        <string>break;</string>
+        <string>case 'ĥ':</string>
+        <string>out.append('h')</string>
+        <string>break;</string>
+        <string>case 'Ħ':</string>
+        <string>out.append('H')</string>
+        <string>break;</string>
+        <string>case 'ħ':</string>
+        <string>out.append('h')</string>
+        <string>break;</string>
+        
+<!-- Ìì · Íí · Îî · Ïï · Įį · İı · Ĩĩ · Īī · Ĭĭ -->
+        <string>case 'Ì':</string>
+        <string>out.append('I')</string>
+        <string>break;</string>
+        <string>case 'ì':</string>
+        <string>out.append('i')</string>
+        <string>break;</string>
+        <string>case 'Í':</string>
+        <string>out.append('I')</string>
+        <string>break;</string>
+        <string>case 'í':</string>
+        <string>out.append('i')</string>
+        <string>break;</string>
+        <string>case 'Î':</string>
+        <string>out.append('I')</string>
+        <string>break;</string>
+        <string>case 'î':</string>
+        <string>out.append('i')</string>
+        <string>break;</string>
+        <string>case 'Ï':</string>
+        <string>out.append('I')</string>
+        <string>break;</string>
+        <string>case 'ï':</string>
+        <string>out.append('i')</string>
+        <string>break;</string>
+        <string>case 'Į':</string>
+        <string>out.append('I')</string>
+        <string>break;</string>
+        <string>case 'į':</string>
+        <string>out.append('i')</string>
+        <string>break;</string>
+        <string>case 'İ':</string>
+        <string>out.append('I')</string>
+        <string>break;</string>
+        <string>case 'ı':</string>
+        <string>out.append('i')</string>
+        <string>break;</string>
+        <string>case 'Ĩ':</string>
+        <string>out.append('I')</string>
+        <string>break;</string>
+        <string>case 'ĩ':</string>
+        <string>out.append('i')</string>
+        <string>break;</string>
+        <string>case 'Ī':</string>
+        <string>out.append('I')</string>
+        <string>break;</string>
+        <string>case 'ī':</string>
+        <string>out.append('i')</string>
+        <string>break;</string>
+        <string>case 'Ĭ':</string>
+        <string>out.append('I')</string>
+        <string>break;</string>
+        <string>case 'ĭ':</string>
+        <string>out.append('i')</string>
+        <string>break;</string>
+        
+<!-- Ĵĵ -->
+        <string>case 'Ĵ':</string>
+        <string>out.append('J')</string>
+        <string>break;</string>
+        <string>case 'ĵ':</string>
+        <string>out.append('i')</string>
+        <string>break;</string>
+        
+<!-- Ķķ · Ǩǩ -->
+        <string>case 'Ķ':</string>
+        <string>out.append('K')</string>
+        <string>break;</string>
+        <string>case 'ķ':</string>
+        <string>out.append('k')</string>
+        <string>break;</string>
+        <string>case 'Ǩ':</string>
+        <string>out.append('K')</string>
+        <string>break;</string>
+        <string>case 'ǩ':</string>
+        <string>out.append('k')</string>
+        <string>break;</string>
+        
+<!-- Ĺĺ · Ļļ · Ľľ · Ŀŀ · Łł -->
+        <string>case 'Ĺ':</string>
+        <string>out.append('L')</string>
+        <string>break;</string>
+        <string>case 'ĺ':</string>
+        <string>out.append('l')</string>
+        <string>break;</string>
+        <string>case 'Ļ':</string>
+        <string>out.append('L')</string>
+        <string>break;</string>
+        <string>case 'ļ':</string>
+        <string>out.append('l')</string>
+        <string>break;</string>
+        <string>case 'Ľ':</string>
+        <string>out.append('L')</string>
+        <string>break;</string>
+        <string>case 'ľ':</string>
+        <string>out.append('l')</string>
+        <string>break;</string>
+        <string>case 'Ŀ':</string>
+        <string>out.append('L')</string>
+        <string>break;</string>
+        <string>case 'ŀ':</string>
+        <string>out.append('l')</string>
+        <string>break;</string>
+        <string>case 'Ł':</string>
+        <string>out.append('L')</string>
+        <string>break;</string>
+        <string>case 'ł':</string>
+        <string>out.append('l')</string>
+        <string>break;</string>
+        
+<!-- Ńń · Ņņ · Ññ · Ňň · Ṅṅ -->
+        <string>case 'Ń':</string>
+        <string>out.append('N')</string>
+        <string>break;</string>
+        <string>case 'ń':</string>
+        <string>out.append('n')</string>
+        <string>break;</string>
+        <string>case 'Ņ':</string>
+        <string>out.append('N')</string>
+        <string>break;</string>
+        <string>case 'ņ':</string>
+        <string>out.append('n')</string>
+        <string>break;</string>
+        <string>case 'Ñ':</string>
+        <string>out.append('N')</string>
+        <string>break;</string>
+        <string>case 'ñ':</string>
+        <string>out.append('n')</string>
+        <string>break;</string>
+        <string>case 'Ň':</string>
+        <string>out.append('N')</string>
+        <string>break;</string>
+        <string>case 'ň':</string>
+        <string>out.append('n')</string>
+        <string>break;</string>
+        <string>case 'Ṅ':</string>
+        <string>out.append('N')</string>
+        <string>break;</string>
+        <string>case 'ṅ':</string>
+        <string>out.append('n')</string>
+        <string>break;</string>
+        
+<!--  Òò · Óó · Ôô · Öö · Õõ · Őő · Ǫǫ · Ōō · Ŏŏ · Ơơ -->
+        <string>case 'Ò':</string>
+        <string>out.append('O')</string>
+        <string>break;</string>
+        <string>case 'ò':</string>
+        <string>out.append('o')</string>
+        <string>break;</string>
+        <string>case 'Ó':</string>
+        <string>out.append('O')</string>
+        <string>break;</string>
+        <string>case 'ó':</string>
+        <string>out.append('o')</string>
+        <string>break;</string>
+        <string>case 'Ô':</string>
+        <string>out.append('O')</string>
+        <string>break;</string>
+        <string>case 'ô':</string>
+        <string>out.append('o')</string>
+        <string>break;</string>
+        <string>case 'Ö':</string>
+        <string>out.append('O')</string>
+        <string>break;</string>
+        <string>case 'ö':</string>
+        <string>out.append('o')</string>
+        <string>break;</string>
+        <string>case 'Õ':</string>
+        <string>out.append('O')</string>
+        <string>break;</string>
+        <string>case 'õ':</string>
+        <string>out.append('o')</string>
+        <string>break;</string>
+        <string>case 'Ő':</string>
+        <string>out.append('O')</string>
+        <string>break;</string>
+        <string>case 'ő':</string>
+        <string>out.append('o')</string>
+        <string>break;</string>
+        <string>case 'Ǫ':</string>
+        <string>out.append('O')</string>
+        <string>break;</string>
+        <string>case 'ǫ':</string>
+        <string>out.append('o')</string>
+        <string>break;</string>
+        <string>case 'Ō':</string>
+        <string>out.append('O')</string>
+        <string>break;</string>
+        <string>case 'ō':</string>
+        <string>out.append('o')</string>
+        <string>break;</string>
+        <string>case 'Ŏ':</string>
+        <string>out.append('O')</string>
+        <string>break;</string>
+        <string>case 'ŏ':</string>
+        <string>out.append('o')</string>
+        <string>break;</string>
+        <string>case 'Ơ':</string>
+        <string>out.append('O')</string>
+        <string>break;</string>
+        <string>case 'ơ':</string>
+        <string>out.append('o')</string>
+        <string>break;</string>
+        
+<!-- Ŕŕ · Ŗŗ · Řř -->
+        <string>case 'Ŕ':</string>
+        <string>out.append('R')</string>
+        <string>break;</string>
+        <string>case 'ŕ':</string>
+        <string>out.append('r')</string>
+        <string>break;</string>
+        <string>case 'Ŗ':</string>
+        <string>out.append('R')</string>
+        <string>break;</string>
+        <string>case 'ŗ':</string>
+        <string>out.append('r')</string>
+        <string>break;</string>
+        <string>case 'Ř':</string>
+        <string>out.append('R')</string>
+        <string>break;</string>
+        <string>case 'ř':</string>
+        <string>out.append('r')</string>
+        <string>break;</string>
+        
+<!-- Śś · Ŝŝ · Şş · Șș · Šš · ẞß · Þþ -->
+        <string>case 'Ś':</string>
+        <string>out.append('S')</string>
+        <string>break;</string>
+        <string>case 'ś':</string>
+        <string>out.append('s')</string>
+        <string>break;</string>
+        <string>case 'Ŝ':</string>
+        <string>out.append('S')</string>
+        <string>break;</string>
+        <string>case 'ŝ':</string>
+        <string>out.append('s')</string>
+        <string>break;</string>
+        <string>case 'Ş':</string>
+        <string>out.append('S')</string>
+        <string>break;</string>
+        <string>case 'ş':</string>
+        <string>out.append('s')</string>
+        <string>break;</string>
+        <string>case 'Ș':</string>
+        <string>out.append('S')</string>
+        <string>break;</string>
+        <string>case 'ș':</string>
+        <string>out.append('s')</string>
+        <string>break;</string>
+        <string>case 'Š':</string>
+        <string>out.append('S')</string>
+        <string>break;</string>
+        <string>case 'š':</string>
+        <string>out.append('s')</string>
+        <string>break;</string>
+        <string>case 'ẞ':</string>
+        <string>out.append('S')</string>
+        <string>break;</string>
+        <string>case 'ß':</string>
+        <string>out.append('s')</string>
+        <string>break;</string>
+        <string>case 'Þ':</string>
+        <string>out.append('S')</string>
+        <string>break;</string>
+        <string>case 'þ':</string>
+        <string>out.append('s')</string>
+        <string>break;</string>
+        
+<!-- Ťť · Ŧŧ · Ţţ · Țț  -->
+        <string>case 'Ť':</string>
+        <string>out.append('T')</string>
+        <string>break;</string>
+        <string>case 'ť':</string>
+        <string>out.append('t')</string>
+        <string>break;</string>
+        <string>case 'Ŧ':</string>
+        <string>out.append('T')</string>
+        <string>break;</string>
+        <string>case 'ŧ':</string>
+        <string>out.append('t')</string>
+        <string>break;</string>
+        <string>case 'Ţ':</string>
+        <string>out.append('T')</string>
+        <string>break;</string>
+        <string>case 'ţ':</string>
+        <string>out.append('t')</string>
+        <string>break;</string>
+        <string>case 'Ț':</string>
+        <string>out.append('T')</string>
+        <string>break;</string>
+        <string>case 'ț':</string>
+        <string>out.append('t')</string>
+        <string>break;</string>
+        
+<!-- Ùù · Úú · Ûû · Üü · Ũũ · Ūū · Ŭŭ · Ųų · Ůů · Űű · Ưư -->
+        <string>case 'Ù':</string>
+        <string>out.append('U')</string>
+        <string>break;</string>
+        <string>case 'ù':</string>
+        <string>out.append('u')</string>
+        <string>break;</string>
+        <string>case 'Ú':</string>
+        <string>out.append('U')</string>
+        <string>break;</string>
+        <string>case 'ú':</string>
+        <string>out.append('u')</string>
+        <string>break;</string>
+        <string>case 'Û':</string>
+        <string>out.append('U')</string>
+        <string>break;</string>
+        <string>case 'û':</string>
+        <string>out.append('u')</string>
+        <string>break;</string>
+        <string>case 'Ü':</string>
+        <string>out.append('U')</string>
+        <string>break;</string>
+        <string>case 'ü':</string>
+        <string>out.append('u')</string>
+        <string>break;</string>
+        <string>case 'Ũ':</string>
+        <string>out.append('U')</string>
+        <string>break;</string>
+        <string>case 'ũ':</string>
+        <string>out.append('u')</string>
+        <string>break;</string>
+        <string>case 'Ū':</string>
+        <string>out.append('U')</string>
+        <string>break;</string>
+        <string>case 'ū':</string>
+        <string>out.append('u')</string>
+        <string>break;</string>
+        <string>case 'Ŭ':</string>
+        <string>out.append('U')</string>
+        <string>break;</string>
+        <string>case 'ŭ':</string>
+        <string>out.append('u')</string>
+        <string>break;</string>
+        <string>case 'Ų':</string>
+        <string>out.append('U')</string>
+        <string>break;</string>
+        <string>case 'ų':</string>
+        <string>out.append('u')</string>
+        <string>break;</string>
+        <string>case 'Ů':</string>
+        <string>out.append('U')</string>
+        <string>break;</string>
+        <string>case 'ů':</string>
+        <string>out.append('u')</string>
+        <string>break;</string>
+        <string>case 'Ű':</string>
+        <string>out.append('U')</string>
+        <string>break;</string>
+        <string>case 'ű':</string>
+        <string>out.append('u')</string>
+        <string>break;</string>
+        <string>case 'Ư':</string>
+        <string>out.append('U')</string>
+        <string>break;</string>
+        <string>case 'ư':</string>
+        <string>out.append('u')</string>
+        <string>break;</string>
+        
+<!-- Ŵŵ -->
+        <string>case 'Ŵ':</string>
+        <string>out.append('W')</string>
+        <string>break;</string>
+        <string>case 'ŵ':</string>
+        <string>out.append('w')</string>
+        <string>break;</string>
+        
+<!-- Ýý · Ŷŷ · Ÿÿ -->
+        <string>case 'Ý':</string>
+        <string>out.append('Y')</string>
+        <string>break;</string>
+        <string>case 'ý':</string>
+        <string>out.append('y')</string>
+        <string>break;</string>
+        <string>case 'Ŷ':</string>
+        <string>out.append('Y')</string>
+        <string>break;</string>
+        <string>case 'ŷ':</string>
+        <string>out.append('y')</string>
+        <string>break;</string>
+        <string>case 'Ÿ':</string>
+        <string>out.append('Y')</string>
+        <string>break;</string>
+        <string>case 'ÿ':</string>
+        <string>out.append('y')</string>
+        <string>break;</string>
+        
+<!-- Źź · Žž · Żż -->
+        <string>case 'Ź':</string>
+        <string>out.append('Z')</string>
+        <string>break;</string>
+        <string>case 'ź':</string>
+        <string>out.append('z')</string>
+        <string>break;</string>
+        <string>case 'Ž':</string>
+        <string>out.append('Z')</string>
+        <string>break;</string>
+        <string>case 'ž':</string>
+        <string>out.append('z')</string>
+        <string>break;</string>
+        <string>case 'Ż':</string>
+        <string>out.append('Z')</string>
+        <string>break;</string>
+        <string>case 'ż':</string>
+        <string>out.append('z')</string>
+        <string>break;</string>
+        
+<!-- end replace special characters -->
+        <string>default:</string>
+        <string>out.append(c);</string>
+        <string>}</string>
+        <string>}</string>
+        <string>identifier = out.toString().toLowerCase().replaceAll('[^-_a-zA-Z0-9]','')</string>
+        <string>"${identifier}"</string>
+      </groovy-code>
+    </mapping-function>
+    
+<!-- 20181018 GK Functie toegevoegd om namen te urlifyen zonder dat ze naar kleine letters worden gezet -->
+    <mapping-function name="NA_urilifyNames">
+      <sample-input>
+        <string>kkjhdf lkjj(d)f[l]k.kj'fHaneGra%af</string>
+      </sample-input>
+      <groovy-code>
+        <string>StringBuilder out = new StringBuilder()</string>
+        <string>for (char c : it.toString().chars) {</string>
+        <string>switch (c) {</string>
+        <string>case ' ':</string>
+        <string>out.append('_')</string>
+        <string>break;</string>
+        <string>case '.':</string>
+        <string>out.append('')</string>
+        <string>break;</string>
+        <string>case '{':</string>
+        <string>out.append('')</string>
+        <string>break;</string>
+        <string>case '}':</string>
+        <string>out.append('')</string>
+        <string>break;</string>
+        <string>case '\\':</string>
+        <string>out.append('_')</string>
+        <string>break;</string>
+        <string>case '(':</string>
+        <string>out.append('')</string>
+        <string>break;</string>
+        <string>case ']':</string>
+        <string>out.append('')</string>
+        <string>break;</string>
+        <string>case '[':</string>
+        <string>out.append('')</string>
+        <string>break;</string>
+        <string>case ')':</string>
+        <string>out.append('')</string>
+        <string>break;</string>
+        <string>case '\'':</string>
+        <string>out.append('')</string>
+        <string>break;</string>
+        <string>case '%':</string>
+        <string>out.append('')</string>
+        
+<!--Toevoeging GK 20181018: komma , hekje # en & eruit gestript-->
+        <string>case ',':</string>
+        <string>out.append('')</string>
+        <string>break;</string>
+        <string>case '#':</string>
+        <string>out.append('')</string>
+        <string>break;</string>
+        <string>case '&amp;':</string>
+        <string>out.append('')</string>
+        <string>break;</string>
+        
+<!-- replace {} -->
+        <string>case '{':</string>
+        <string>out.append('')</string>
+        <string>break;</string>
+        <string>case '}':</string>
+        <string>out.append('')</string>
+        <string>break;</string>
+        
+<!-- replace > character -->
+        <string>case '&gt;':</string>
+        <string>out.append('')</string>
+        <string>break;</string>
+        
+<!-- replace special characters -->
+        
+<!-- replace special characters -->
+        
+<!-- Àà · Áá · Ââ · Ää · Ãã · Āā · Ąą · Ăă · Ǎǎ  -->
+        <string>case 'À':</string>
+        <string>out.append('A')</string>
+        <string>break;</string>
+        <string>case 'à':</string>
+        <string>out.append('a')</string>
+        <string>break;</string>
+        <string>case 'Â':</string>
+        <string>out.append('A')</string>
+        <string>break;</string>
+        <string>case 'á':</string>
+        <string>out.append('a')</string>
+        <string>break;</string>
+        <string>case 'Ã':</string>
+        <string>out.append('A')</string>
+        <string>break;</string>
+        <string>case 'â':</string>
+        <string>out.append('a')</string>
+        <string>break;</string>
+        <string>case 'Ā':</string>
+        <string>out.append('A')</string>
+        <string>break;</string>
+        <string>case 'ä':</string>
+        <string>out.append('a')</string>
+        <string>break;</string>
+        <string>case 'Ą':</string>
+        <string>out.append('A')</string>
+        <string>break;</string>
+        <string>case 'ą':</string>
+        <string>out.append('a')</string>
+        <string>break;</string>
+        <string>case 'ã':</string>
+        <string>out.append('a')</string>
+        <string>break;</string>
+        <string>case 'Ă':</string>
+        <string>out.append('A')</string>
+        <string>break;</string>
+        <string>case 'ă':</string>
+        <string>out.append('a')</string>
+        <string>break;</string>
+        <string>case 'Ǎ':</string>
+        <string>out.append('A')</string>
+        <string>break;</string>
+        <string>case 'ǎ':</string>
+        <string>out.append('a')</string>
+        <string>break;</string>
+        
+<!-- Çç · Ĉĉ · Čč · Ćć  -->
+        <string>case 'Ç':</string>
+        <string>out.append('C')</string>
+        <string>break;</string>
+        <string>case 'ç':</string>
+        <string>out.append('c')</string>
+        <string>break;</string>
+        <string>case 'Ĉ':</string>
+        <string>out.append('C')</string>
+        <string>break;</string>
+        <string>case 'ĉ':</string>
+        <string>out.append('c')</string>
+        <string>break;</string>
+        <string>case 'Č':</string>
+        <string>out.append('C')</string>
+        <string>break;</string>
+        <string>case 'č':</string>
+        <string>out.append('c')</string>
+        <string>break;</string>
+        <string>case 'Ć':</string>
+        <string>out.append('C')</string>
+        <string>break;</string>
+        <string>case 'ć':</string>
+        <string>out.append('c')</string>
+        <string>break;</string>
+        
+<!-- Đđ · Ďď  -->
+        <string>case 'Đ':</string>
+        <string>out.append('D')</string>
+        <string>break;</string>
+        <string>case 'đ':</string>
+        <string>out.append('d')</string>
+        <string>break;</string>
+        <string>case 'Ď':</string>
+        <string>out.append('D')</string>
+        <string>break;</string>
+        <string>case 'ď':</string>
+        <string>out.append('d')</string>
+        <string>break;</string>
+        
+<!-- Èè · Éé · Êê · Ëë · Ęę · Ēē · Ĕĕ · Ėė · Ěě	 -->
+        <string>case 'È':</string>
+        <string>out.append('E')</string>
+        <string>break;</string>
+        <string>case 'è':</string>
+        <string>out.append('e')</string>
+        <string>break;</string>
+        <string>case 'É':</string>
+        <string>out.append('E')</string>
+        <string>break;</string>
+        <string>case 'é':</string>
+        <string>out.append('e')</string>
+        <string>break;</string>
+        <string>case 'Ê':</string>
+        <string>out.append('E')</string>
+        <string>break;</string>
+        <string>case 'ê':</string>
+        <string>out.append('e')</string>
+        <string>break;</string>
+        <string>case 'Ë':</string>
+        <string>out.append('E')</string>
+        <string>break;</string>
+        <string>case 'ë':</string>
+        <string>out.append('e')</string>
+        <string>break;</string>
+        <string>case 'Ę':</string>
+        <string>out.append('E')</string>
+        <string>break;</string>
+        <string>case 'ę':</string>
+        <string>out.append('e')</string>
+        <string>break;</string>
+        <string>case 'Ē':</string>
+        <string>out.append('E')</string>
+        <string>break;</string>
+        <string>case 'ē':</string>
+        <string>out.append('e')</string>
+        <string>break;</string>
+        <string>case 'Ė':</string>
+        <string>out.append('E')</string>
+        <string>break;</string>
+        <string>case 'ė':</string>
+        <string>out.append('e')</string>
+        <string>break;</string>
+        <string>case 'Ě':</string>
+        <string>out.append('E')</string>
+        <string>break;</string>
+        <string>case 'ě':</string>
+        <string>out.append('e')</string>
+        <string>break;</string>
+        
+<!--  Ĝĝ · Ğğ · Ġġ · Ģģ · Ǧǧ -->
+        <string>case 'Ĝ':</string>
+        <string>out.append('G')</string>
+        <string>break;</string>
+        <string>case 'ĝ':</string>
+        <string>out.append('g')</string>
+        <string>break;</string>
+        <string>case 'Ğ':</string>
+        <string>out.append('G')</string>
+        <string>break;</string>
+        <string>case 'ğ':</string>
+        <string>out.append('g')</string>
+        <string>break;</string>
+        <string>case 'Ġ':</string>
+        <string>out.append('G')</string>
+        <string>break;</string>
+        <string>case 'ġ':</string>
+        <string>out.append('g')</string>
+        <string>break;</string>
+        <string>case 'Ģ':</string>
+        <string>out.append('G')</string>
+        <string>break;</string>
+        <string>case 'ģ':</string>
+        <string>out.append('g')</string>
+        <string>break;</string>
+        <string>case 'Ǧ':</string>
+        <string>out.append('G')</string>
+        <string>break;</string>
+        <string>case 'ǧ':</string>
+        <string>out.append('g')</string>
+        <string>break;</string>
+        
+<!-- Ĥĥ · Ħħ -->
+        <string>case 'Ĥ':</string>
+        <string>out.append('H')</string>
+        <string>break;</string>
+        <string>case 'ĥ':</string>
+        <string>out.append('h')</string>
+        <string>break;</string>
+        <string>case 'Ħ':</string>
+        <string>out.append('H')</string>
+        <string>break;</string>
+        <string>case 'ħ':</string>
+        <string>out.append('h')</string>
+        <string>break;</string>
+        
+<!-- Ìì · Íí · Îî · Ïï · Įį · İı · Ĩĩ · Īī · Ĭĭ -->
+        <string>case 'Ì':</string>
+        <string>out.append('I')</string>
+        <string>break;</string>
+        <string>case 'ì':</string>
+        <string>out.append('i')</string>
+        <string>break;</string>
+        <string>case 'Í':</string>
+        <string>out.append('I')</string>
+        <string>break;</string>
+        <string>case 'í':</string>
+        <string>out.append('i')</string>
+        <string>break;</string>
+        <string>case 'Î':</string>
+        <string>out.append('I')</string>
+        <string>break;</string>
+        <string>case 'î':</string>
+        <string>out.append('i')</string>
+        <string>break;</string>
+        <string>case 'Ï':</string>
+        <string>out.append('I')</string>
+        <string>break;</string>
+        <string>case 'ï':</string>
+        <string>out.append('i')</string>
+        <string>break;</string>
+        <string>case 'Į':</string>
+        <string>out.append('I')</string>
+        <string>break;</string>
+        <string>case 'į':</string>
+        <string>out.append('i')</string>
+        <string>break;</string>
+        <string>case 'İ':</string>
+        <string>out.append('I')</string>
+        <string>break;</string>
+        <string>case 'ı':</string>
+        <string>out.append('i')</string>
+        <string>break;</string>
+        <string>case 'Ĩ':</string>
+        <string>out.append('I')</string>
+        <string>break;</string>
+        <string>case 'ĩ':</string>
+        <string>out.append('i')</string>
+        <string>break;</string>
+        <string>case 'Ī':</string>
+        <string>out.append('I')</string>
+        <string>break;</string>
+        <string>case 'ī':</string>
+        <string>out.append('i')</string>
+        <string>break;</string>
+        <string>case 'Ĭ':</string>
+        <string>out.append('I')</string>
+        <string>break;</string>
+        <string>case 'ĭ':</string>
+        <string>out.append('i')</string>
+        <string>break;</string>
+        
+<!-- Ĵĵ -->
+        <string>case 'Ĵ':</string>
+        <string>out.append('J')</string>
+        <string>break;</string>
+        <string>case 'ĵ':</string>
+        <string>out.append('i')</string>
+        <string>break;</string>
+        
+<!-- Ķķ · Ǩǩ -->
+        <string>case 'Ķ':</string>
+        <string>out.append('K')</string>
+        <string>break;</string>
+        <string>case 'ķ':</string>
+        <string>out.append('k')</string>
+        <string>break;</string>
+        <string>case 'Ǩ':</string>
+        <string>out.append('K')</string>
+        <string>break;</string>
+        <string>case 'ǩ':</string>
+        <string>out.append('k')</string>
+        <string>break;</string>
+        
+<!-- Ĺĺ · Ļļ · Ľľ · Ŀŀ · Łł -->
+        <string>case 'Ĺ':</string>
+        <string>out.append('L')</string>
+        <string>break;</string>
+        <string>case 'ĺ':</string>
+        <string>out.append('l')</string>
+        <string>break;</string>
+        <string>case 'Ļ':</string>
+        <string>out.append('L')</string>
+        <string>break;</string>
+        <string>case 'ļ':</string>
+        <string>out.append('l')</string>
+        <string>break;</string>
+        <string>case 'Ľ':</string>
+        <string>out.append('L')</string>
+        <string>break;</string>
+        <string>case 'ľ':</string>
+        <string>out.append('l')</string>
+        <string>break;</string>
+        <string>case 'Ŀ':</string>
+        <string>out.append('L')</string>
+        <string>break;</string>
+        <string>case 'ŀ':</string>
+        <string>out.append('l')</string>
+        <string>break;</string>
+        <string>case 'Ł':</string>
+        <string>out.append('L')</string>
+        <string>break;</string>
+        <string>case 'ł':</string>
+        <string>out.append('l')</string>
+        <string>break;</string>
+        
+<!-- Ńń · Ņņ · Ññ · Ňň · Ṅṅ -->
+        <string>case 'Ń':</string>
+        <string>out.append('N')</string>
+        <string>break;</string>
+        <string>case 'ń':</string>
+        <string>out.append('n')</string>
+        <string>break;</string>
+        <string>case 'Ņ':</string>
+        <string>out.append('N')</string>
+        <string>break;</string>
+        <string>case 'ņ':</string>
+        <string>out.append('n')</string>
+        <string>break;</string>
+        <string>case 'Ñ':</string>
+        <string>out.append('N')</string>
+        <string>break;</string>
+        <string>case 'ñ':</string>
+        <string>out.append('n')</string>
+        <string>break;</string>
+        <string>case 'Ň':</string>
+        <string>out.append('N')</string>
+        <string>break;</string>
+        <string>case 'ň':</string>
+        <string>out.append('n')</string>
+        <string>break;</string>
+        <string>case 'Ṅ':</string>
+        <string>out.append('N')</string>
+        <string>break;</string>
+        <string>case 'ṅ':</string>
+        <string>out.append('n')</string>
+        <string>break;</string>
+        
+<!--  Òò · Óó · Ôô · Öö · Õõ · Őő · Ǫǫ · Ōō · Ŏŏ · Ơơ -->
+        <string>case 'Ò':</string>
+        <string>out.append('O')</string>
+        <string>break;</string>
+        <string>case 'ò':</string>
+        <string>out.append('o')</string>
+        <string>break;</string>
+        <string>case 'Ó':</string>
+        <string>out.append('O')</string>
+        <string>break;</string>
+        <string>case 'ó':</string>
+        <string>out.append('o')</string>
+        <string>break;</string>
+        <string>case 'Ô':</string>
+        <string>out.append('O')</string>
+        <string>break;</string>
+        <string>case 'ô':</string>
+        <string>out.append('o')</string>
+        <string>break;</string>
+        <string>case 'Ö':</string>
+        <string>out.append('O')</string>
+        <string>break;</string>
+        <string>case 'ö':</string>
+        <string>out.append('o')</string>
+        <string>break;</string>
+        <string>case 'Õ':</string>
+        <string>out.append('O')</string>
+        <string>break;</string>
+        <string>case 'õ':</string>
+        <string>out.append('o')</string>
+        <string>break;</string>
+        <string>case 'Ő':</string>
+        <string>out.append('O')</string>
+        <string>break;</string>
+        <string>case 'ő':</string>
+        <string>out.append('o')</string>
+        <string>break;</string>
+        <string>case 'Ǫ':</string>
+        <string>out.append('O')</string>
+        <string>break;</string>
+        <string>case 'ǫ':</string>
+        <string>out.append('o')</string>
+        <string>break;</string>
+        <string>case 'Ō':</string>
+        <string>out.append('O')</string>
+        <string>break;</string>
+        <string>case 'ō':</string>
+        <string>out.append('o')</string>
+        <string>break;</string>
+        <string>case 'Ŏ':</string>
+        <string>out.append('O')</string>
+        <string>break;</string>
+        <string>case 'ŏ':</string>
+        <string>out.append('o')</string>
+        <string>break;</string>
+        <string>case 'Ơ':</string>
+        <string>out.append('O')</string>
+        <string>break;</string>
+        <string>case 'ơ':</string>
+        <string>out.append('o')</string>
+        <string>break;</string>
+        
+<!-- Ŕŕ · Ŗŗ · Řř -->
+        <string>case 'Ŕ':</string>
+        <string>out.append('R')</string>
+        <string>break;</string>
+        <string>case 'ŕ':</string>
+        <string>out.append('r')</string>
+        <string>break;</string>
+        <string>case 'Ŗ':</string>
+        <string>out.append('R')</string>
+        <string>break;</string>
+        <string>case 'ŗ':</string>
+        <string>out.append('r')</string>
+        <string>break;</string>
+        <string>case 'Ř':</string>
+        <string>out.append('R')</string>
+        <string>break;</string>
+        <string>case 'ř':</string>
+        <string>out.append('r')</string>
+        <string>break;</string>
+        
+<!-- Śś · Ŝŝ · Şş · Șș · Šš · ẞß · Þþ -->
+        <string>case 'Ś':</string>
+        <string>out.append('S')</string>
+        <string>break;</string>
+        <string>case 'ś':</string>
+        <string>out.append('s')</string>
+        <string>break;</string>
+        <string>case 'Ŝ':</string>
+        <string>out.append('S')</string>
+        <string>break;</string>
+        <string>case 'ŝ':</string>
+        <string>out.append('s')</string>
+        <string>break;</string>
+        <string>case 'Ş':</string>
+        <string>out.append('S')</string>
+        <string>break;</string>
+        <string>case 'ş':</string>
+        <string>out.append('s')</string>
+        <string>break;</string>
+        <string>case 'Ș':</string>
+        <string>out.append('S')</string>
+        <string>break;</string>
+        <string>case 'ș':</string>
+        <string>out.append('s')</string>
+        <string>break;</string>
+        <string>case 'Š':</string>
+        <string>out.append('S')</string>
+        <string>break;</string>
+        <string>case 'š':</string>
+        <string>out.append('s')</string>
+        <string>break;</string>
+        <string>case 'ẞ':</string>
+        <string>out.append('S')</string>
+        <string>break;</string>
+        <string>case 'ß':</string>
+        <string>out.append('s')</string>
+        <string>break;</string>
+        <string>case 'Þ':</string>
+        <string>out.append('S')</string>
+        <string>break;</string>
+        <string>case 'þ':</string>
+        <string>out.append('s')</string>
+        <string>break;</string>
+        
+<!-- Ťť · Ŧŧ · Ţţ · Țț  -->
+        <string>case 'Ť':</string>
+        <string>out.append('T')</string>
+        <string>break;</string>
+        <string>case 'ť':</string>
+        <string>out.append('t')</string>
+        <string>break;</string>
+        <string>case 'Ŧ':</string>
+        <string>out.append('T')</string>
+        <string>break;</string>
+        <string>case 'ŧ':</string>
+        <string>out.append('t')</string>
+        <string>break;</string>
+        <string>case 'Ţ':</string>
+        <string>out.append('T')</string>
+        <string>break;</string>
+        <string>case 'ţ':</string>
+        <string>out.append('t')</string>
+        <string>break;</string>
+        <string>case 'Ț':</string>
+        <string>out.append('T')</string>
+        <string>break;</string>
+        <string>case 'ț':</string>
+        <string>out.append('t')</string>
+        <string>break;</string>
+        
+<!-- Ùù · Úú · Ûû · Üü · Ũũ · Ūū · Ŭŭ · Ųų · Ůů · Űű · Ưư -->
+        <string>case 'Ù':</string>
+        <string>out.append('U')</string>
+        <string>break;</string>
+        <string>case 'ù':</string>
+        <string>out.append('u')</string>
+        <string>break;</string>
+        <string>case 'Ú':</string>
+        <string>out.append('U')</string>
+        <string>break;</string>
+        <string>case 'ú':</string>
+        <string>out.append('u')</string>
+        <string>break;</string>
+        <string>case 'Û':</string>
+        <string>out.append('U')</string>
+        <string>break;</string>
+        <string>case 'û':</string>
+        <string>out.append('u')</string>
+        <string>break;</string>
+        <string>case 'Ü':</string>
+        <string>out.append('U')</string>
+        <string>break;</string>
+        <string>case 'ü':</string>
+        <string>out.append('u')</string>
+        <string>break;</string>
+        <string>case 'Ũ':</string>
+        <string>out.append('U')</string>
+        <string>break;</string>
+        <string>case 'ũ':</string>
+        <string>out.append('u')</string>
+        <string>break;</string>
+        <string>case 'Ū':</string>
+        <string>out.append('U')</string>
+        <string>break;</string>
+        <string>case 'ū':</string>
+        <string>out.append('u')</string>
+        <string>break;</string>
+        <string>case 'Ŭ':</string>
+        <string>out.append('U')</string>
+        <string>break;</string>
+        <string>case 'ŭ':</string>
+        <string>out.append('u')</string>
+        <string>break;</string>
+        <string>case 'Ų':</string>
+        <string>out.append('U')</string>
+        <string>break;</string>
+        <string>case 'ų':</string>
+        <string>out.append('u')</string>
+        <string>break;</string>
+        <string>case 'Ů':</string>
+        <string>out.append('U')</string>
+        <string>break;</string>
+        <string>case 'ů':</string>
+        <string>out.append('u')</string>
+        <string>break;</string>
+        <string>case 'Ű':</string>
+        <string>out.append('U')</string>
+        <string>break;</string>
+        <string>case 'ű':</string>
+        <string>out.append('u')</string>
+        <string>break;</string>
+        <string>case 'Ư':</string>
+        <string>out.append('U')</string>
+        <string>break;</string>
+        <string>case 'ư':</string>
+        <string>out.append('u')</string>
+        <string>break;</string>
+        
+<!-- Ŵŵ -->
+        <string>case 'Ŵ':</string>
+        <string>out.append('W')</string>
+        <string>break;</string>
+        <string>case 'ŵ':</string>
+        <string>out.append('w')</string>
+        <string>break;</string>
+        
+<!-- Ýý · Ŷŷ · Ÿÿ -->
+        <string>case 'Ý':</string>
+        <string>out.append('Y')</string>
+        <string>break;</string>
+        <string>case 'ý':</string>
+        <string>out.append('y')</string>
+        <string>break;</string>
+        <string>case 'Ŷ':</string>
+        <string>out.append('Y')</string>
+        <string>break;</string>
+        <string>case 'ŷ':</string>
+        <string>out.append('y')</string>
+        <string>break;</string>
+        <string>case 'Ÿ':</string>
+        <string>out.append('Y')</string>
+        <string>break;</string>
+        <string>case 'ÿ':</string>
+        <string>out.append('y')</string>
+        <string>break;</string>
+        
+<!-- Źź · Žž · Żż -->
+        <string>case 'Ź':</string>
+        <string>out.append('Z')</string>
+        <string>break;</string>
+        <string>case 'ź':</string>
+        <string>out.append('z')</string>
+        <string>break;</string>
+        <string>case 'Ž':</string>
+        <string>out.append('Z')</string>
+        <string>break;</string>
+        <string>case 'ž':</string>
+        <string>out.append('z')</string>
+        <string>break;</string>
+        <string>case 'Ż':</string>
+        <string>out.append('Z')</string>
+        <string>break;</string>
+        <string>case 'ż':</string>
+        <string>out.append('z')</string>
+        <string>break;</string>
+        
+<!-- end replace special characters -->
+        <string>default:</string>
+        <string>out.append(c);</string>
+        <string>}</string>
+        <string>}</string>
+        <string>identifier = out.toString().replaceAll('[^-_a-zA-Z0-9]','')</string>
+        <string>"${identifier}"</string>
+      </groovy-code>
+    </mapping-function>
+    <mapping-function name="NA_trefwoorden">
+      <sample-input>
+        <string>De Katholieke Vrouw	|De Nieuwe Eeuw	|De Tijd	|Gelderlander	|Helmer J.W.	|Kallen A. van der	|Laudy Alphons	|Nieuwenhuis W.	|Pol Max van	|Steenhoff-Smulders Albertine	|Tijd</string>
+      </sample-input>
+      <groovy-code>
+        <string>kwrd = "${it}".replaceAll('[^ |_a-zA-Z0-9]','').capitalize()</string>
+        <string>parts = kwrd.toString().split(",")</string>
+        <string>if (parts.length &gt; 1) {</string>
+        <string>"${parts[1].trim()} ${parts[0]}"</string>
+        <string>}</string>
+        <string>else {</string>
+        <string>"${it}"</string>
+        <string>}</string>
+      </groovy-code>
+    </mapping-function>
+    <mapping-function name="NA_splitgeo_about">
+      <sample-input>
+        <string>Tutucorin</string>
+        <string>- - - - -</string>
+        <string>Jaffanapatnam</string>
+        <string>- - - - -</string>
+        <string>Tutucorin|Jaffanapatnam</string>
+        <string>- - - - -</string>
+        <string>Tutucorin|Jaffanapatnam|Macao|Engelsen</string>
+      </sample-input>
+      <groovy-code>
+        <string>kwrd = "${it.toLowerCase()}"</string>
+        <string>parts = kwrd.toString().split("\\|")</string>
+        <string>if (parts.length &gt; 1) {</string>
+        <string>"${parts[0].trim()}"</string>
+        <string>}</string>
+        <string>else {</string>
+        <string>"${kwrd}"</string>
+        <string>}</string>
+      </groovy-code>
+    </mapping-function>
+    <mapping-function name="NA_splitgeo_label">
+      <sample-input>
+        <string>Tutucorin</string>
+        <string>- - - - -</string>
+        <string>Jaffanapatnam</string>
+        <string>- - - - -</string>
+        <string>Tutucorin|Jaffanapatnam</string>
+        <string>- - - - -</string>
+        <string>Tutucorin|Jaffanapatnam|Macao|Engelsen</string>
+      </sample-input>
+      <groovy-code>
+        <string>kwrd = "${it}"</string>
+        <string>parts = kwrd.toString().split("\\|")</string>
+        <string>if (parts.length &gt; 1) {</string>
+        <string>"${parts[0].trim()}"</string>
+        <string>}</string>
+        <string>else {</string>
+        <string>"${it}"</string>
+        <string>}</string>
+      </groovy-code>
+    </mapping-function>
+    <mapping-function name="NA_genereerDataSetUrl">
+      <groovy-code>
+        <string>code = "${spec}"</string>
+        <string>it = "${baseUrl}/doc/Dataset-" + code.substring(0,7)</string>
+      </groovy-code>
+    </mapping-function>
+    <mapping-function name="hyphenateGUID">
+      <sample-input>
+        <string>64ca27d182201d1ce0530518a8c06b96</string>
+      </sample-input>
+      <groovy-code>
+        <string>"${it}".toLowerCase().replaceAll('^([0-9a-f]{8})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{12})', '$1-$2-$3-$4-$5')</string>
+      </groovy-code>
+    </mapping-function>
+    <mapping-function name="test">
+      <sample-input>
+        <string>64AC27d182201d1ce0530518a8c06b96</string>
+      </sample-input>
+      <groovy-code>
+        <string>"${it}".toLowerCase().replaceAll('^([0-9a-f]{8})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{12})', '$1-$2-$3-$4-$5')</string>
+      </groovy-code>
+    </mapping-function>
+    <mapping-function name="NA_lowercase_spec">
+      <groovy-code>
+        <string>StringBuilder out = new StringBuilder()</string>
+        <string>for (char c : it.toString().chars) {</string>
+        <string>switch (c) {</string>
+        <string>case '-':</string>
+        <string>out.append('.')</string>
+        <string>break;</string>
+        <string>default:</string>
+        <string>out.append(c);</string>
+        <string>}</string>
+        <string>}</string>
+        <string>identifier = out.toString()</string>
+        <string>"${spec}".toLowerCase().replaceAll('-','.')</string>
+      </groovy-code>
+    </mapping-function>
+    <mapping-function name="NA_uppercase_spec">
+      <groovy-code>
+        <string>StringBuilder out = new StringBuilder()</string>
+        <string>for (char c : it.toString().chars) {</string>
+        <string>switch (c) {</string>
+        <string>case '-':</string>
+        <string>out.append('.')</string>
+        <string>break;</string>
+        <string>default:</string>
+        <string>out.append(c);</string>
+        <string>}</string>
+        <string>}</string>
+        <string>identifier = out.toString()</string>
+        <string>"${spec}".toUpperCase().replaceAll('-','.')</string>
+      </groovy-code>
+    </mapping-function>
+  </functions>
+  <attrs>
+    <attr tag="rdf:about" uriCheck="true"/>
+    <attr tag="rdf:resource"/>
+    <attr tag="rdf:datatype"/>
+    <attr tag="rdf:type"/>
+    <attr tag="rdf:parseType"/>
+    <attr tag="xml:lang"/>
+  </attrs>
+  
+<!-- START - root -->
+  <root tag="nant:RDF">
+    <node-mapping inputPath="/input"/>
+ 
+
+	<!-- ================================ PRIMAIRE CLASSES ================================ --> 
+	<!-- ore:Aggregation - -->
+    <elem tag="ore:Aggregation">
+      <attr tag="rdf:about" uriCheck="true">
+        <node-mapping inputPath="/input" outputPath="/nant:RDF/ore:Aggregation/@rdf:about">
+          <groovy-code>
+            <string>if (_input.dcsubjectsoort_ == "Nadere toegangen" ) {</string>
+            <string>"${baseUrl}/doc/" + NA_lowercase_spec()</string>
+            <string>}</string>
+          </groovy-code>
+        </node-mapping>				
+      </attr>
+	 <elem tag="nao:isAggregatietype">
+        <attr tag="rdf:resource" uriCheck="true">
+          <node-mapping inputPath="/input" outputPath="/nant:RDF/ore:Aggregation/nao:isAggregatietype/@rdf:resource">
+            <groovy-code>
+              <string>if (_input.dcsubjectsoort_ == "Nadere toegangen" ) {</string>
+              <string>"${baseUrl}/def/Index"</string>
+              <string>}</string>
+            </groovy-code>
+          </node-mapping>
+        </attr>
+        <attr tag="xml:lang"/>
+      </elem>
+      <elem attrs="xml:lang" tag="rdfs:label">
+        <node-mapping inputPath="/input" outputPath="/nant:RDF/ore:Aggregation/rdfs:label">
+          <groovy-code>
+            <string>if (_input.dcsubjectsoort_ == "Nadere toegangen") {</string>
+            <string>"${_input.dcsubjectabbreviation_}"</string>
+            <string>}</string>
+          </groovy-code>
+        </node-mapping>
+      </elem>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="skos:altLabel"/>
+      <elem attrs="xml:lang" tag="dc:title"/>
+      <elem attrs="rdf:resource,xml:lang" tag="dcterms:description"/>
+      <elem attrs="xml:lang" tag="nao:inventarisnummer"/>
+      <elem tag="nao:uuid">
+        <node-mapping inputPath="/input/@id" outputPath="/nant:RDF/ore:Aggregation/nao:uuid">
+          <groovy-code>
+            <string>if (_input.dcsubjectsoort_)</string>
+            <string>"${_id}"</string>
+          </groovy-code>
+        </node-mapping>
+      </elem>
+      <elem tag="nao:toegangsnummer"/>
+      <elem tag="nao:ntCode">
+        <node-mapping inputPath="/input" outputPath="/nant:RDF/ore:Aggregation/nao:ntCode">
+          <groovy-code>
+            <string>if (_input.dcsubjectsoort_)</string>
+            <string>"${_input.dcidentifiercode_}"</string>
+          </groovy-code>
+        </node-mapping>
+      </elem>
+      <elem attrs="xml:lang" tag="dc:identifier">
+        <node-mapping inputPath="/input/@id" outputPath="/nant:RDF/ore:Aggregation/dc:identifier">
+          <groovy-code>
+            <string>if (_input.dcsubjectsoort_)</string>
+            <string>"${_id}"</string>
+          </groovy-code>
+        </node-mapping>
+      </elem>
+      <elem attrs="rdf:resource" tag="edm:isShownAt"/>
+      <elem attrs="rdf:resource" tag="foaf:primaryTopic"/>
+      <elem attrs="rdf:resource" tag="ore:aggregates"/>
+      <elem attrs="rdf:resource" tag="edm:hasView"/>
+      <elem attrs="xml:lang, rdf:datatype" tag="dcterms:issued"/>
+      <elem attrs="rdf:resource,xml:lang" tag="dcterms:relation"/>
+      <elem attrs="rdf:resource,xml:lang,rdf:datatype" tag="dcterms:modified"/>
+      <elem attrs="rdf:resource,xml:lang" tag="dcat:keyword"/>
+      <elem attrs="rdf:resource,xml:lang" tag="dcat:landingPage"/>
+      <elem attrs="rdf:resource,xml:lang" tag="dc:creator"/>
+      <elem attrs="rdf:resource,xml:lang,rdf:datatype" tag="dcterms:creator"/>
+      <elem attrs="rdf:resource,xml:lang" tag="dc:date"/>
+      <elem tag="dc:language"/>
+      <elem attrs="xml:lang" tag="dc:publisher">
+		<node-mapping inputPath="/input" outputPath="/nant:RDF/ore:Aggregation/dc:publisher">
+		  <groovy-code>
+			<string>if (_input.dcsubjectsoort_)</string>
+			<string>&quot;${_input.dcsubjectauteur_}&quot;</string>
+		  </groovy-code>
+		</node-mapping>
+      </elem>
+      <elem attrs="rdf:resource,xml:lang,rdf:datatype" tag="dcterms:publisher"/>
+      <elem attrs="rdf:resource" tag="dcterms:spatial"/>
+      <elem attrs="xml:lang" tag="dc:coverage">
+		<node-mapping inputPath="/input" outputPath="/nant:RDF/ore:Aggregation/dc:coverage">
+		  <groovy-code>
+			<string>if (_input.dcsubjectsoort_)</string>
+			<string>&quot;${_input.dcsubjectdatering_}&quot;</string>
+		  </groovy-code>
+		</node-mapping>
+      </elem>
+      <elem attrs="xml:lang" tag="edm:begin">
+		<node-mapping inputPath="/input" outputPath="/nant:RDF/ore:Aggregation/edm:begin">
+		  <groovy-code>
+			<string>if (_input.dcsubjectsoort_)</string>
+			<string>&quot;${_input.dcsubjectbeginjaar_}&quot;</string>
+		  </groovy-code>
+		</node-mapping>
+      </elem>
+     <elem attrs="xml:lang" tag="edm:end">
+		<node-mapping inputPath="/input" outputPath="/nant:RDF/ore:Aggregation/edm:end">
+		  <groovy-code>
+			<string>if (_input.dcsubjectsoort_)</string>
+			<string>&quot;${_input.dcsubjecteindjaar_}&quot;</string>
+		  </groovy-code>
+		</node-mapping>
+     </elem>
+    </elem>
+    
+	<!-- nao:RecordAggregation -->
+    <elem tag="nao:Recordaggregatie">
+      <attr tag="rdf:about" uriCheck="true">
+        <node-mapping inputPath="/input" outputPath="/nant:RDF/nao:Recordaggregatie/@rdf:about">
+          <groovy-code>
+            <string>if ((_input.dcsubjectrecordsoort_ == "NTRecord" )) {</string>
+            <string>"${baseUrl}/doc/indexrecord/${_uniqueIdentifier.sanitizeURI()}"</string>
+            <string>}</string>
+          </groovy-code>
+        </node-mapping>
+      </attr>
+      <elem attrs="xml:lang" tag="nao:aet">
+        <node-mapping inputPath="/input" outputPath="/nant:RDF/nao:Recordaggregatie/nao:aet">
+          <groovy-code>
+            <string>if (_input.dcsubjectrecordsoort_)</string>
+            <string>if (_input.dcidentifiercode_) {</string>
+            <string>"${_input.dcsubjectaet_}".capitalize()</string>
+            <string>}</string>
+          </groovy-code>
+        </node-mapping>
+      </elem>
+      <elem attrs="rdf:resource" tag="rdf:type"/>
+      <elem attrs="xml:lang" tag="rdfs:label">
+        <node-mapping inputPath="/input/record" outputPath="/nant:RDF/nao:Recordaggregatie/rdfs:label">
+          <groovy-code>
+            <string>if (_input.dcsubjectrecordsoort_)</string>
+            <string>"Record over ${_input.dcsubjectaet_}"</string>
+          </groovy-code>
+        </node-mapping>
+      </elem>
+      <elem attrs="xml:lang" tag="skos:prefLabel">
+        <node-mapping inputPath="/input" outputPath="/nant:RDF/nao:Recordaggregatie/skos:prefLabel">
+          <groovy-code>
+            <string>if (_input.dcsubjectrecordsoort_)</string>
+            <string>"Record over ${_input.dcsubjectaet_}"</string>
+          </groovy-code>
+        </node-mapping>
+      </elem>
+      <elem attrs="xml:lang" tag="dc:identifier">
+        <node-mapping inputPath="/input/@id" outputPath="/nant:RDF/nao:Recordaggregatie/dc:identifier">
+          <groovy-code>
+            <string>if (_input.dcsubjectrecordsoort_)</string>
+            <string>"${_id}"</string>
+          </groovy-code>
+        </node-mapping>
+      </elem>
+      <elem tag="edm:isShownAt">
+        <attr tag="rdf:resource" uriCheck="true">
+          <node-mapping inputPath="/input" outputPath="/nant:RDF/nao:Recordaggregatie/edm:isShownAt/@rdf:resource">
+            <groovy-code>
+              <string>if (_input.dcsubjectrecordsoort_ == "NTRecord")</string>
+              <string>"http://hdl.handle.net/10648/${_uniqueIdentifier}"</string>
+            </groovy-code>
+          </node-mapping>
+        </attr>
+      </elem>
+      <elem attrs="rdf:resource" tag="foaf:primaryTopic"/>
+      <elem attrs="rdf:resource" tag="edm:isShownBy"/>
+      <elem attrs="rdf:resource" tag="edm:hasView"/>
+      <elem attrs="rdf:resource" tag="edm:landingPage"/>
+      <elem tag="ore:isAggregatedBy">
+        <attr tag="rdf:resource" uriCheck="true">
+          <node-mapping inputPath="/input/record" outputPath="/nant:RDF/nao:Recordaggregatie/ore:isAggregatedBy/@rdf:resource">
+            <groovy-code>
+              <string>if (_input.dcsubjectrecordsoort_)</string>
+              <string>_input.record * { _record -&gt;</string>
+              <string>"${baseUrl}/doc/" + NA_lowercase_spec()</string>
+              <string>}</string>
+            </groovy-code>
+          </node-mapping>
+        </attr>
+      </elem>
+      <elem attrs="rdf:resource" tag="ore:aggregates"/>
+      <elem attrs="rdf:resource" tag="dcterms:creator"/>
+      <elem attrs="rdf:resource,xml:lang" tag="dcterms:type"/>
+      <elem tag="nao:isAggregatietype">
+        <attr tag="rdf:resource" uriCheck="true">
+          <node-mapping inputPath="/input" outputPath="/nant:RDF/nao:Recordaggregatie/nao:isAggregatietype/@rdf:resource">
+            <groovy-code>
+              <string>if (_input.dcsubjectrecordsoort_ == "NTRecord") {</string>
+              <string>"${baseUrl}/def/IndexRecord"</string>
+              <string>}</string>
+            </groovy-code>
+          </node-mapping>
+        </attr>
+        <attr tag="xml:lang"/>
+      </elem>
+      <elem attrs="xml:lang, rdf:datatype" tag="dcterms:created"/>
+      <elem attrs="rdf:resource,xml:lang,rdf:datatype" tag="dcterms:modified"/>
+    </elem>
+    
+	<!-- nao:Archiefeenheid -->
+    <elem tag="nao:Archiefeenheid">
+      <attr tag="rdf:about">
+        <node-mapping inputPath="/input" outputPath="/nant:RDF/nao:Archiefeenheid/rdf:about">
+          <groovy-code>
+            <string>if (_input.dcsubjectrecordsoort_ == "NTRecord") {</string>
+            <string>"${baseUrl}/id/archiefeenheid/${_uniqueIdentifier}"</string>
+            <string>}</string>
+          </groovy-code>
+        </node-mapping>				
+      </attr>
+      <elem attrs="rdf:resource" tag="rdf:type"/>
+      <elem attrs="xml:lang" tag="rdfs:label">
+        <node-mapping inputPath="/input" outputPath="/nant:RDF/nao:Archiefeenheid/rdfs:label">
+          <groovy-code>
+            <string>if (_input.dcsubjectrecordsoort_)</string>
+            <string>"Archiefeenheid"</string>
+          </groovy-code>
+        </node-mapping>			
+      </elem>						
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="skos:altLabel"/>
+      <elem attrs="rdf:resource" tag="foaf:isPrimaryTopicOf"/>
+      <elem attrs="xml:lang" tag="nao:archiefbloknummer"/>			
+      <elem attrs="xml:lang" tag="nao:inventarisnummer"/>
+      <elem attrs="xml:lang" tag="nao:bestanddeelnummer"/>			
+      <elem attrs="xml:lang" tag="nao:dossiernummer"/>
+      <elem attrs="xml:lang" tag="nao:toegangsnummer"/>
+      <elem attrs="xml:lang" tag="nao:volgnummer"/>
+      <elem attrs="xml:lang" tag="nav:origineleVerwijzing"/>
+      <elem attrs="xml:lang" tag="nav:scan"/>     
+      <elem attrs="xml:lang" tag="dc:identifier"/>
+      <elem attrs="xml:lang,rdf:datatype" tag="dc:date"/>
+      <elem attrs="xml:lang,rdf:datatype" tag="dcterms:date"/>
+      <elem attrs="xml:lang" tag="dc:format"/>
+      <elem attrs="xml:lang" tag="dc:type"/>
+      <elem attrs="rdf:resource" tag="nao:isMateriaaltype"/>
+      <elem attrs="xml:lang" tag="nao:archiefLink">
+		<node-mapping inputPath="/input/record/dc:subject.vwz_archivelink" outputPath="/nant:RDF/nao:Archiefeenheid/nao:archiefLink"/>		
+      </elem>
+    </elem> 
+	<!-- ================================ EIND PRIMAIRE CLASSES ================================ --> 
+
+	
+	<!-- ================================ ARCHIEFBESCHRIJVINGEN CLASSES ================================ -->    
+	<!-- nao:Archiefbeschrijving -->
+    <elem attrs="rdf:about" tag="nao:Archiefbeschrijving" uriCheck="true">
+      <elem attrs="rdf:resource" tag="rdf:type"/>
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="skos:altLabel"/>
+      <elem attrs="xml:lang" tag="dc:description"/>
+      <elem attrs="rdf:resource,xml:lang" tag="nao:persistentIdentifier"/>
+      <elem attrs="rdf:resource" tag="edm:hasView"/>
+      <elem attrs="rdf:resource,xml:lang" tag="ov:describes"/>
+      <elem attrs="xml:lang" tag="nao:toelichting"/>
+      <elem attrs="xml:lang" tag="dc:subject"/>
+      <elem attrs="xml:lang" tag="nao:titelFotocollectie"/>
+      <elem attrs="xml:lang" tag="nao:titelFotoserie"/>			
+      <elem attrs="xml:lang" tag="nao:trefwoordAlgemeen"/>
+      <elem attrs="xml:lang" tag="nao:trefwoordPersoon"/>
+      <elem attrs="xml:lang" tag="nao:trefwoordLocatie"/>
+      <elem attrs="xml:lang" tag="nao:trefwoordOrganisatie"/>			
+      <elem attrs="rdf:resource" tag="dcterms:subject"/>
+      <elem attrs="rdf:resource" tag="foaf:primaryTopic"/>
+      <elem attrs="rdf:resource" tag="foaf:isPrimaryTopicOf"/>
+      <elem attrs="xml:lang" tag="dc:coverage"/>
+      <elem attrs="rdf:resource" tag="dcterms:spatial"/>
+      <elem attrs="xml:lang" tag="dc:relation"/>
+      <elem attrs="rdf:resource" tag="dcterms:relation"/>
+      <elem attrs="xml:lang" tag="dc:date"/>
+      <elem attrs="xml:lang, rdf:datatype" tag="dcterms:date"/>
+      <elem attrs="rdf:resource,xml:lang" tag="dc:creator"/>
+      <elem attrs="rdf:resource,xml:lang" tag="dcterms:creator"/>
+      <elem attrs="rdf:datatype,xml:lang" tag="dcterms:created"/>
+      <elem attrs="xml:lang" tag="dc:publisher"/>
+      <elem attrs="rdf:resource,xml:lang" tag="dcterms:publisher"/>
+      <elem attrs="xml:lang" tag="dc:license"/>
+      <elem attrs="rdf:resource,xml:lang" tag="dcterms:license"/>
+      <elem attrs="xml:lang" tag="rdfs:comment"/>
+      <elem attrs="xml:lang" tag="edm:begin"/>
+      <elem attrs="xml:lang" tag="edm:end"/>
+      <elem attrs="xml:lang" tag="nav:datumVoorzetsel"/>
+      <elem attrs="xml:lang" tag="bf:scale"/>
+      <elem attrs="rdf:resource" tag="odrl:hasPolicy"/>
+      <elem attrs="xml:lang" tag="skos:note"/>
+    </elem>    
+
+	<!-- Aandeelhouderbeschrijving -->
+    <elem attrs="rdf:about" tag="nav:Aandeelhouderbeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="nav:bedrag"/>
+      <elem attrs="xml:lang" tag="nav:opmerking"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftAandeelhouder"/>		  
+    </elem>	
+	
+	<!-- Aanstellingbeschrijving -->
+    <elem attrs="rdf:about" tag="nav:Aanstellingbeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="nav:verwijzing"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftBenoemde"/>		  
+    </elem>	
+	
+	<!-- ArchiefvormendePersoonBeschrijving -->
+    <elem attrs="rdf:about" tag="nav:ArchiefvormendePersoonBeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="nav:archieftoegang"/>
+	  <elem attrs="xml:lang" tag="dc:description"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftRechtspersoon"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftBewindspersoon"/>	  
+    </elem>		
+		
+	<!-- Bestekbeschrijving -->
+    <elem attrs="rdf:about" tag="nav:Bestekbeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="nav:organisatie"/>
+      <elem attrs="xml:lang" tag="nav:dienst"/>
+      <elem attrs="xml:lang" tag="nav:organisatieonderdeel"/>
+      <elem attrs="xml:lang" tag="nav:subonderdeel"/>
+      <elem attrs="xml:lang" tag="nav:datumVanAanbesteding"/>
+      <elem attrs="xml:lang" tag="nav:eindeDienstjaren"/>
+      <elem attrs="xml:lang" tag="nav:startDienstjaren"/>
+      <elem attrs="xml:lang" tag="dct:date"/>
+      <elem attrs="xml:lang" tag="nav:aantalTekeningen"/>
+      <elem attrs="xml:lang" tag="nav:opmerking"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftSoortWerk"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftPlaatsVanAanbesteding"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftObject "/> 
+    </elem>	
+
+	<!-- Boedelbeschrijving -->
+    <elem attrs="rdf:about" tag="nav:Boedelbeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="nav:bijzonderheden"/>
+      <elem attrs="xml:lang" tag="nav:verwijzing"/>
+	  <elem attrs="xml:lang, rdf:resource" tag="nav:heeftBoedel"/>
+    </elem>		
+	
+	<!-- Decreetbeschrijving -->
+    <elem attrs="rdf:about" tag="nav:Decreetbeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="dct:date"/>
+      <elem attrs="xml:lang" tag="nav:bijzonderheden"/>
+      <elem attrs="xml:lang" tag="nav:verwijzing"/>
+      <elem attrs="xml:lang" tag="dct:date"/>
+      <elem attrs="xml:lang" tag="nav:jaar"/>
+      <elem attrs="xml:lang" tag="nav:maand"/>
+	  <elem attrs="xml:lang, rdf:resource" tag="nav:heeftDecreet"/>
+    </elem>	
+
+	<!-- Documentbeschrijving -->
+    <elem attrs="rdf:about" tag="nav:Documentbeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="dct:date"/>
+      <elem attrs="xml:lang" tag="dc:description"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftPlaatsnaam"/>
+      <elem attrs="xml:lang" tag="nav:onderwerp"/>
+      <elem attrs="xml:lang" tag="nao:volgnummer"/>
+      <elem attrs="xml:lang" tag="nav:notaBene"/>
+      <elem attrs="xml:lang" tag="edm:isShownAt"/>
+      <elem attrs="xml:lang" tag="nav:stuk"/>
+      <elem attrs="xml:lang" tag="nav:trefwoord"/>
+      <elem attrs="xml:lang" tag="nav:titel"/>
+      <elem attrs="xml:lang" tag="nav:nummer"/>
+      <elem attrs="xml:lang" tag="nav:rubriek"/>
+      <elem attrs="xml:lang" tag="nav:nummer"/>
+      <elem attrs="xml:lang" tag="nav:opmerking"/>
+      <elem attrs="xml:lang" tag="nav:vestiging"/>
+      <elem attrs="xml:lang" tag="nav:soortArchief"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftGeografischeAanduiding"/>
+      <elem attrs="xml:lang" tag="nav:pagina"/>
+      <elem attrs="xml:lang" tag="nav:katern"/>
+      <elem attrs="xml:lang" tag="nav:schip"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftBestemming"/>
+      <elem attrs="xml:lang" tag="nav:periode"/>
+      <elem attrs="xml:lang" tag="nav:jaar"/>
+      <elem attrs="xml:lang" tag="nav:typeScheepvaart"/>
+      <elem attrs="xml:lang" tag="nav:bijzonderheden"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftPlaatsVanVertrek"/>
+      <elem attrs="xml:lang" tag="nav:brievenPrive"/>
+      <elem attrs="xml:lang" tag="nav:brievenZakelijk"/>
+      <elem attrs="xml:lang" tag="nav:drukwerkAantal"/>
+      <elem attrs="xml:lang" tag="nav:drukwerkSoort"/>
+      <elem attrs="xml:lang" tag="nav:signatuur"/>
+      <elem attrs="xml:lang" tag="nav:nummer"/>
+      <elem attrs="xml:lang" tag="nav:doos"/>
+	  <elem attrs="xml:lang" tag="nav:doosToevoeging"/>
+	  <elem attrs="xml:lang" tag="nav:scheepspapieren"/>
+	  <elem attrs="xml:lang" tag="nav:zakelijkeStukken"/>
+	  <elem attrs="xml:lang" tag="nav:kaap"/>	 	  
+    </elem>	
+
+	<!-- Dossierbeschrijving -->
+    <elem attrs="rdf:about" tag="nav:Dossierbeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="nav:trefwoord"/>
+      <elem attrs="xml:lang" tag="nav:herkomst"/>
+      <elem attrs="xml:lang" tag="nav:registratienummer"/>
+      <elem attrs="xml:lang" tag="dc:description"/>
+    </elem>	
+
+	<!-- Emigrantbeschrijving -->
+    <elem attrs="rdf:about" tag="nav:Emigrantbeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftEmigrant"/>
+    </elem>		
+	
+	<!-- Functiebeschrijving -->
+    <elem attrs="rdf:about" tag="nav:Functiebeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftFunctie"/>
+    </elem>	
+	
+	<!-- Gedecoreerdebeschrijving -->
+    <elem attrs="rdf:about" tag="nav:Gedecoreerdebeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="nav:nummerOfJaar"/>
+	  <elem attrs="rdf:resource" tag="edm:isShownAt"/>
+	  <elem attrs="xml:lang, rdf:resource" tag="nav:heeftGedecoreerde"/>
+    </elem>	
+
+	<!-- Gedetineerdebeschrijving -->
+    <elem attrs="rdf:about" tag="nav:Gedetineerdebeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+	  <elem attrs="rdf:resource" tag="edm:isShownAt"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftDelict"/>	  
+	  <elem attrs="xml:lang, rdf:resource" tag="nav:heeftGedetineerde"/>
+    </elem>	
+	
+	<!-- Geinterneerdebeschrijving -->
+    <elem attrs="rdf:about" tag="nav:Geinterneerdebeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="nav:kampoverplaatsingsdatum1"/>
+      <elem attrs="xml:lang" tag="nav:kampoverplaatsingsdatum2"/>
+      <elem attrs="xml:lang" tag="nav:kampoverplaatsingsdatum3"/>
+      <elem attrs="xml:lang" tag="nav:kampoverplaatsingsdatum4"/>	  
+      <elem attrs="xml:lang" tag="nav:kampoverplaatsingsdatum5"/>  
+      <elem attrs="xml:lang" tag="nav:kampregistratiewijziging1"/>
+      <elem attrs="xml:lang" tag="nav:kampregistratiewijziging2"/>
+	  <elem attrs="xml:lang" tag="nav:kampregistratiewijziging3"/>
+      <elem attrs="xml:lang" tag="nav:kampregistratiewijziging4"/>
+      <elem attrs="xml:lang" tag="nav:kampregistratiewijziging5"/>	  
+      <elem attrs="xml:lang" tag="nav:overigeInfo"/>
+      <elem attrs="xml:lang" tag="nav:notitieBrief"/>
+      <elem attrs="xml:lang" tag="nav:notitieVertaler"/>
+      <elem attrs="xml:lang" tag="nav:serienummer"/>	  
+      <elem attrs="xml:lang, rdf:resource" tag="edm:isShownAt"/>
+	  <elem attrs="xml:lang" tag="nav:kaartcode"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftGeinterneerde"/>
+    </elem>	
+
+	<!-- Gratiebeschrijving -->
+    <elem attrs="rdf:about" tag="nav:Gratiebeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="nav:beschikkingExtern"/>
+      <elem attrs="xml:lang" tag="nav:opmerking"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftGratie"/>
+    </elem>	
+
+	<!-- Hoofdenlijstitembeschrijving -->
+    <elem attrs="rdf:about" tag="nav:Hoofdenlijstitembeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="dc:coverage"/>
+      <elem attrs="xml:lang" tag="nav:verwijswoorden"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftRubriek"/>		
+      <elem attrs="xml:lang" tag="nav:eersteBladzijde"/>	
+      <elem attrs="xml:lang" tag="nav:totaalAantalBladzijdes"/>	
+      <elem attrs="xml:lang" tag="nav:verwijzing"/>							
+      <elem attrs="xml:lang" tag="nav:onderwerp"/>	
+      <elem attrs="xml:lang" tag="nav:opmerking"/>
+    </elem>		
+	
+	<!-- Journaalbeschrijving -->
+    <elem attrs="rdf:about" tag="nav:Journaalbeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="dc:description"/>
+      <elem attrs="xml:lang" tag="dct:date"/>
+    </elem>		
+
+	<!-- Lidmateninschrijvingbeschrijving -->
+    <elem attrs="rdf:about" tag="nav:Lidmateninschrijvingbeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftPersoon"/>		
+    </elem>		
+
+	<!-- Locatiebeschrijving -->
+    <elem attrs="rdf:about" tag="nav:Locatiebeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="nav:viswater"/>		
+    </elem>	
+	
+	<!-- Militairbeschrijving -->
+    <elem attrs="rdf:about" tag="nav:Militairbeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="nav:aardVanBron"/>
+	  <elem attrs="xml:lang" tag="nav:opmerking"/>	  
+      <elem attrs="xml:lang" tag="nav:lijst"/>
+      <elem attrs="xml:lang" tag="nav:stamboek"/>
+	  <elem attrs="xml:lang" tag="nav:stuk"/>
+      <elem attrs="xml:lang" tag="nav:oudKenmerk"/>
+      <elem attrs="xml:lang" tag="nav:bijzonderheden"/>
+	  <elem attrs="xml:lang" tag="nav:notabene"/>
+      <elem attrs="xml:lang" tag="nav:verwijzing"/>	
+      <elem attrs="xml:lang" tag="dct:date"/>	  
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftMilitair"/>		
+    </elem>			
+	
+	<!-- Octrooiverleningbeschrijving -->
+    <elem attrs="rdf:about" tag="nav:Octrooiverleningbeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="dct:date"/>	  
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftOctrooi"/>		
+    </elem>	
+	
+	<!-- Onderwerpbeschrijving -->
+    <elem attrs="rdf:about" tag="nav:Onderwerpbeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>  
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftProject"/>		
+    </elem>		
+	
+	<!-- Ordonnantiebeschrijving -->
+    <elem attrs="rdf:about" tag="nav:Ordonnantiebeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>  
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftOrdonnantie"/>		
+    </elem>	
+
+	<!-- PersoonInAmbtboekbeschrijving -->
+    <elem attrs="rdf:about" tag="nav:PersoonInAmbtboekbeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/> 
+      <elem attrs="xml:lang" tag="nav:bijzonderheden"/>	 
+	  <elem attrs="xml:lang" tag="nav:verdereGegevens"/>	
+      <elem attrs="xml:lang" tag="dct:date"/>	  
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftPersoon"/>	
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftDomein"/>			  
+    </elem>		
+	
+	<!-- PersoonInGenealogiebeschrijving -->
+    <elem attrs="rdf:about" tag="nav:PersoonInGenealogiebeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/> 
+      <elem attrs="xml:lang" tag="dct:date"/>
+      <elem attrs="xml:lang" tag="nav:registratiedatum"/>
+      <elem attrs="xml:lang" tag="nav:akteSoort"/>
+      <elem attrs="xml:lang" tag="nav:opmerking"/>
+      <elem attrs="xml:lang" tag="nav:schip"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftPlaatsnaam"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftPersoon"/>			  
+    </elem>	
+
+	<!-- Procesdossierbeschrijving -->
+    <elem attrs="rdf:about" tag="nav:Procesdossierbeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/> 
+      <elem attrs="xml:lang" tag="nav:opmerking"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftProces"/>		  
+    </elem>	
+
+	<!-- Regestbeschrijving -->
+    <elem attrs="rdf:about" tag="nav:Regestbeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="nav:regestnummer"/>
+      <elem attrs="xml:lang" tag="dc:description"/>
+      <elem attrs="xml:lang" tag="nav:materieleVorm"/>
+      <elem attrs="xml:lang" tag="nav:opmerking"/>
+      <elem attrs="xml:lang" tag="nao:inventarisnummer"/>
+      <elem attrs="xml:lang" tag="edm:begin"/>
+      <elem attrs="xml:lang" tag="edm:end"/>
+      <elem attrs="xml:lang" tag="dct:date"/>
+      <elem attrs="xml:lang" tag="nav:dateringCharter"/>
+      <elem attrs="xml:lang" tag="nav:verwijzing"/>
+      <elem attrs="xml:lang" tag="nav:dorsaal"/>					
+      <elem attrs="xml:lang" tag="nav:zegels"/>										
+    </elem>	
+
+	<!-- RegisterVanEigendomBeschrijving -->
+    <elem attrs="rdf:about" tag="nav:RegisterVanEigendomBeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftDomein"/>										
+    </elem>	
+	
+    <!-- Schipbeschrijving -->
+    <elem attrs="rdf:about" tag="nav:Schipbeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:schip"/>										
+    </elem>	
+
+    <!-- StukkenVanKamerVanKoophandelBeschrijving -->
+    <elem attrs="rdf:about" tag="nav:StukkenVanKamerVanKoophandelBeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftBedrijf"/>										
+    </elem>	
+
+	<!-- Verwijsbeschrijving -->
+    <elem attrs="rdf:about" tag="nav:Verwijsbeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="nav:website"/>
+	  <elem attrs="xml:lang, rdf:resource" tag="nav:heeftBewindspersoonsarchief"/>										
+    </elem>	
+
+	<!-- Verzoekschriftbeschrijving -->
+    <elem attrs="rdf:about" tag="nav:Verzoekschriftbeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftProvincie"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftPlaatsnaam"/>
+      <elem attrs="xml:lang" tag="nav:recht"/>
+      <elem attrs="xml:lang" tag="dct:date"/>
+      <elem attrs="xml:lang" tag="nav:mandement"/>
+      <elem attrs="xml:lang" tag="nav:suppliant"/>
+      <elem attrs="xml:lang" tag="nav:tegenpartij"/>
+      <elem attrs="xml:lang" tag="nav:betreft"/>
+      <elem attrs="xml:lang" tag="nav:beschikkingHof"/>
+      <elem attrs="xml:lang" tag="nav:bijzonderheden"/>
+      <elem attrs="xml:lang" tag="nav:potloodnummer"/>
+      <elem attrs="xml:lang" tag="nav:plaatsVanDatum"/>
+	  <elem attrs="xml:lang, rdf:resource" tag="nav:heeftPersoon"/>										
+    </elem>	
+
+	<!-- Vonnisbeschrijving -->
+    <elem attrs="rdf:about" tag="nav:Vonnisbeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="nav:bijzonderheden"/>
+	  <elem attrs="xml:lang, rdf:resource" tag="nav:heeftPersoon"/>
+	  <elem attrs="xml:lang, rdf:resource" tag="nav:heeftVonnis"/>	  
+    </elem>	
+
+	<!-- Windrechtbeschrijving -->
+    <elem attrs="rdf:about" tag="nav:Windrechtbeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="dct:date"/>
+	  <elem attrs="xml:lang" tag="nav:bedrag"/>
+	  <elem attrs="xml:lang" tag="nav:object"/>
+	  <elem attrs="xml:lang, rdf:resource" tag="nav:heeftPersoon"/>
+	  <elem attrs="xml:lang, rdf:resource" tag="nav:heeftPlaatsnaam"/>
+	  <elem attrs="xml:lang, rdf:resource" tag="nav:heeftPlaatsDuiding"/>	  
+    </elem>	
+
+	<!-- Persoonbeschrijving -->
+    <elem attrs="rdf:about" tag="nav:Persoonbeschrijving">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+	  <elem attrs="xml:lang, rdf:resource" tag="nav:heeftPlaatsnaam"/>
+      <elem attrs="xml:lang" tag="dct:date"/>
+      <elem attrs="xml:lang" tag="nav:opmerking"/>
+      <elem attrs="xml:lang" tag="nav:bijzonderheden"/>
+      <elem attrs="xml:lang" tag="nav:fotoAanwezig"/>
+      <elem attrs="xml:lang" tag="nav:verwijzing"/>
+	  <elem attrs="xml:lang, rdf:resource" tag="nav:heeftPersoon"/>
+    </elem>	
+	<!-- ================================ EIND ARCHIEFBESCHRIJVINGEN CLASSES ================================ -->
+	
+
+	<!-- ================================ PERSONEN CLASSES ================================ -->		
+	<!-- pnv:Person -->
+    <elem attrs="rdf:about" tag="pnv:Person">
+      <elem attrs="rdf:resource,xml:lang" tag="dc:identifier"/>
+      <elem attrs="xml:lang" tag="nao:fragmentIdentifier"/>
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="skos:altLabel"/>
+      <elem attrs="rdf:about" tag="rdfs:seeAlso"/>
+      <elem attrs="rdf:resource" tag="owl:sameAs"/>
+      <elem attrs="rdf:resource" tag="foaf:made"/>
+      <elem attrs="xml:lang" tag="nav:periode"/>
+      <elem attrs="xml:lang" tag="nav:voorganger"/>
+      <elem attrs="xml:lang" tag="nav:nationaliteit"/>
+      <elem attrs="xml:lang" tag="nav:datumVanVertrek"/>	  
+      <elem attrs="rdf:resource" tag="foaf:isPrimaryTopicOf"/>
+      <elem attrs="rdf:resource" tag="ebucore:hasRole"/>
+      <elem attrs="rdf:resource" tag="nav:heeftBeroep"/>
+      <elem attrs="rdf:resource" tag="nav:functieId"/>
+      <elem attrs="rdf:resource" tag="nav:heeftFunctie"/>
+	  <elem attrs="xml:lang" tag="nav:functie"/>
+	  <elem attrs="rdf:resource,xml:lang" tag="dc:description"/>
+	  <elem attrs="xml:lang" tag="nav:geboortejaar"/> 
+      <elem attrs="xml:lang" tag="skos:note"/>
+	  <elem attrs="xml:lang, rdf:resource" tag="nav:heeftWoonplaats"/>
+      <elem attrs="rdf:resource,xml:lang" tag="nav:heeftLeen"/>	  
+      <elem attrs="rdf:resource,xml:lang" tag="nav:geslacht"/>
+      <elem attrs="rdf:resource,xml:lang" tag="nav:heeftReligie"/>
+      <elem attrs="rdf:resource,xml:lang,rdf:datatype" tag="schema:birthDate"/>
+	  <elem attrs="rdf:resource,xml:lang" tag="nav:heeftGeboorteplaats"/> 
+      <elem attrs="rdf:resource,xml:lang" tag="schema:birthPlace"/>
+      <elem attrs="rdf:resource,xml:lang,rdf:datatype" tag="schema:deathDate"/>
+      <elem attrs="rdf:resource,xml:lang" tag="schema:deathPlace"/>
+      <elem attrs="xml:lang" tag="nav:overlijdensdatumTekst"/>
+      <elem attrs="xml:lang" tag="nav:doopdatum"/>
+      <elem attrs="xml:lang" tag="nav:leeftijd"/>
+      <elem attrs="rdf:about,rdf:parseType" tag="pnv:hasName">
+        <elem attrs="rdf:about,rdf:parseType" tag="pnv:PersonName">
+          <elem attrs="xml:lang" tag="skos:definition"/>
+          <elem attrs="xml:lang" tag="rdfs:label"/>
+          <elem attrs="rdf:resource,xml:lang" tag="pnv:nameSpecification"/>
+          <elem attrs="xml:lang" tag="pnv:initials"/>
+          <elem attrs="xml:lang" tag="pnv:prefix"/>
+          <elem attrs="xml:lang" tag="pnv:givenName"/>
+          <elem attrs="xml:lang" tag="pnv:givenNameSuffix"/>
+          <elem attrs="xml:lang" tag="pnv:firstName"/>
+          <elem attrs="xml:lang" tag="pnv:patronym"/>
+          <elem attrs="xml:lang" tag="pnv:infixTitle"/>
+          <elem attrs="xml:lang" tag="pnv:surnamePrefix"/>
+          <elem attrs="xml:lang" tag="pnv:baseSurname"/>
+          <elem attrs="xml:lang" tag="pnv:infix"/>
+          <elem attrs="xml:lang" tag="pnv:surname"/>
+          <elem attrs="xml:lang" tag="pnv:trailingPatronym"/>
+          <elem attrs="xml:lang" tag="pnv:suffix"/>
+          <elem attrs="xml:lang" tag="pnv:honorificSuffix"/>
+          <elem attrs="xml:lang" tag="pnv:disambiguatingDescription"/>
+          <elem attrs="xml:lang" tag="pnv:literalName"/>
+          <elem attrs="xml:lang" tag="nav:origineleNaam"/>			  
+        </elem>
+      </elem>
+      <elem attrs="rdf:resource,xml:lang" tag="nav:heeftVerblijfplaats"/>
+      <elem attrs="rdf:resource,xml:lang" tag="nav:wasEigendomVan"/>
+      <elem attrs="rdf:resource" tag="edm:wasPresentAt"/>
+      <elem attrs="rdf:resource" tag="edm:hasMet"/>
+      <elem attrs="rdf:resource" tag="agrl:hasSpouse"/>
+      <elem attrs="rdf:resource" tag="agrl:hasFianceeFiance"/>
+      <elem attrs="rdf:resource" tag="agrl:hasParent"/>
+      <elem attrs="rdf:resource" tag="agrl:hasChild"/>
+      <elem attrs="rdf:resource" tag="schema:memberOf"/>
+    </elem>
+
+	<!-- Aandeelhouder -->
+    <elem attrs="rdf:about" tag="nav:Aandeelhouder">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+	  <elem attrs="xml:lang" tag="skos:prefLabel"/>	  
+      <elem attrs="xml:lang" tag="nav:functie"/>
+      <elem attrs="rdf:about,rdf:parseType" tag="pnv:hasName">
+        <elem attrs="rdf:about,rdf:parseType" tag="pnv:PersonName">
+          <elem attrs="xml:lang" tag="skos:definition"/>
+          <elem attrs="xml:lang" tag="rdfs:label"/>
+          <elem attrs="rdf:resource,xml:lang" tag="pnv:nameSpecification"/>
+          <elem attrs="xml:lang" tag="pnv:initials"/>
+          <elem attrs="xml:lang" tag="pnv:prefix"/>
+          <elem attrs="xml:lang" tag="pnv:givenName"/>
+          <elem attrs="xml:lang" tag="pnv:givenNameSuffix"/>
+          <elem attrs="xml:lang" tag="pnv:firstName"/>
+          <elem attrs="xml:lang" tag="pnv:patronym"/>
+          <elem attrs="xml:lang" tag="pnv:infixTitle"/>
+          <elem attrs="xml:lang" tag="pnv:surnamePrefix"/>
+          <elem attrs="xml:lang" tag="pnv:baseSurname"/>
+          <elem attrs="xml:lang" tag="pnv:infix"/>
+          <elem attrs="xml:lang" tag="pnv:surname"/>
+          <elem attrs="xml:lang" tag="pnv:trailingPatronym"/>
+          <elem attrs="xml:lang" tag="pnv:suffix"/>
+          <elem attrs="xml:lang" tag="pnv:honorificSuffix"/>
+          <elem attrs="xml:lang" tag="pnv:disambiguatingDescription"/>
+          <elem attrs="xml:lang" tag="pnv:literalName"/>
+          <elem attrs="xml:lang" tag="nav:origineleNaam"/>			  
+        </elem>
+      </elem>	  
+    </elem>
+
+	<!-- Benoemde -->
+    <elem attrs="rdf:about" tag="nav:Benoemde">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+	  <elem attrs="xml:lang" tag="skos:prefLabel"/>	  
+      <elem attrs="xml:lang" tag="nav:functie"/>
+      <elem attrs="rdf:about,rdf:parseType" tag="pnv:hasName">
+        <elem attrs="rdf:about,rdf:parseType" tag="pnv:PersonName">
+          <elem attrs="xml:lang" tag="skos:definition"/>
+          <elem attrs="xml:lang" tag="rdfs:label"/>
+          <elem attrs="rdf:resource,xml:lang" tag="pnv:nameSpecification"/>
+          <elem attrs="xml:lang" tag="pnv:initials"/>
+          <elem attrs="xml:lang" tag="pnv:prefix"/>
+          <elem attrs="xml:lang" tag="pnv:givenName"/>
+          <elem attrs="xml:lang" tag="pnv:givenNameSuffix"/>
+          <elem attrs="xml:lang" tag="pnv:firstName"/>
+          <elem attrs="xml:lang" tag="pnv:patronym"/>
+          <elem attrs="xml:lang" tag="pnv:infixTitle"/>
+          <elem attrs="xml:lang" tag="pnv:surnamePrefix"/>
+          <elem attrs="xml:lang" tag="pnv:baseSurname"/>
+          <elem attrs="xml:lang" tag="pnv:infix"/>
+          <elem attrs="xml:lang" tag="pnv:surname"/>
+          <elem attrs="xml:lang" tag="pnv:trailingPatronym"/>
+          <elem attrs="xml:lang" tag="pnv:suffix"/>
+          <elem attrs="xml:lang" tag="pnv:honorificSuffix"/>
+          <elem attrs="xml:lang" tag="pnv:disambiguatingDescription"/>
+          <elem attrs="xml:lang" tag="pnv:literalName"/>
+          <elem attrs="xml:lang" tag="nav:origineleNaam"/>			  
+        </elem>
+      </elem>	  
+    </elem>
+
+	<!-- Emigrant -->
+    <elem attrs="rdf:about" tag="nav:Emigrant">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+	  <elem attrs="xml:lang" tag="skos:prefLabel"/>	  
+      <elem attrs="xml:lang" tag="nav:datumVanVertrek"/>	  
+	  <elem attrs="xml:lang, rdf:resource" tag="nav:heeftWoonplaats"/>	  
+	  <elem attrs="xml:lang, rdf:resource" tag="nav:heeftBestemming"/>	  
+      <elem attrs="rdf:about,rdf:parseType" tag="pnv:hasName">
+        <elem attrs="rdf:about,rdf:parseType" tag="pnv:PersonName">
+          <elem attrs="xml:lang" tag="skos:definition"/>
+          <elem attrs="xml:lang" tag="rdfs:label"/>
+          <elem attrs="rdf:resource,xml:lang" tag="pnv:nameSpecification"/>
+          <elem attrs="xml:lang" tag="pnv:initials"/>
+          <elem attrs="xml:lang" tag="pnv:prefix"/>
+          <elem attrs="xml:lang" tag="pnv:givenName"/>
+          <elem attrs="xml:lang" tag="pnv:givenNameSuffix"/>
+          <elem attrs="xml:lang" tag="pnv:firstName"/>
+          <elem attrs="xml:lang" tag="pnv:patronym"/>
+          <elem attrs="xml:lang" tag="pnv:infixTitle"/>
+          <elem attrs="xml:lang" tag="pnv:surnamePrefix"/>
+          <elem attrs="xml:lang" tag="pnv:baseSurname"/>
+          <elem attrs="xml:lang" tag="pnv:infix"/>
+          <elem attrs="xml:lang" tag="pnv:surname"/>
+          <elem attrs="xml:lang" tag="pnv:trailingPatronym"/>
+          <elem attrs="xml:lang" tag="pnv:suffix"/>
+          <elem attrs="xml:lang" tag="pnv:honorificSuffix"/>
+          <elem attrs="xml:lang" tag="pnv:disambiguatingDescription"/>
+          <elem attrs="xml:lang" tag="pnv:literalName"/>
+          <elem attrs="xml:lang" tag="nav:origineleNaam"/>			  
+        </elem>
+      </elem>	  
+    </elem>
+
+	<!-- Bewindspersoon -->
+    <elem attrs="rdf:about" tag="nav:Bewindspersoon">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+	  <elem attrs="xml:lang" tag="skos:prefLabel"/>	 
+	  <elem attrs="xml:lang" tag="nav:partijStroming"/>
+	  <elem attrs="xml:lang" tag="nav:partij"/>
+	  <elem attrs="xml:lang" tag="schema:birthDate"/>
+	  <elem attrs="xml:lang" tag="schema:deathDate"/>
+	  <elem attrs="xml:lang, rdf:resource" tag="nav:heeftBewindspersonensarchief"/>
+	  <elem attrs="xml:lang, rdf:resource" tag="nav:heeftKabinet"/>
+	  <elem attrs="xml:lang, rdf:resource" tag="nav:heeftFunctie"/>
+	  <elem attrs="xml:lang" tag="nav:partijStromingFunctie"/>
+	  <elem attrs="xml:lang" tag="nav:archiefId"/>
+	  <elem attrs="xml:lang" tag="nav:kabinetId"/>
+	  <elem attrs="xml:lang" tag="nav:functieId"/>	  
+      <elem attrs="rdf:about,rdf:parseType" tag="pnv:hasName">
+        <elem attrs="rdf:about,rdf:parseType" tag="pnv:PersonName">
+          <elem attrs="xml:lang" tag="skos:definition"/>
+          <elem attrs="xml:lang" tag="rdfs:label"/>
+          <elem attrs="rdf:resource,xml:lang" tag="pnv:nameSpecification"/>
+          <elem attrs="xml:lang" tag="pnv:initials"/>
+          <elem attrs="xml:lang" tag="pnv:prefix"/>
+          <elem attrs="xml:lang" tag="pnv:givenName"/>
+          <elem attrs="xml:lang" tag="pnv:givenNameSuffix"/>
+          <elem attrs="xml:lang" tag="pnv:firstName"/>
+          <elem attrs="xml:lang" tag="pnv:patronym"/>
+          <elem attrs="xml:lang" tag="pnv:infixTitle"/>
+          <elem attrs="xml:lang" tag="pnv:surnamePrefix"/>
+          <elem attrs="xml:lang" tag="pnv:baseSurname"/>
+          <elem attrs="xml:lang" tag="pnv:infix"/>
+          <elem attrs="xml:lang" tag="pnv:surname"/>
+          <elem attrs="xml:lang" tag="pnv:trailingPatronym"/>
+          <elem attrs="xml:lang" tag="pnv:suffix"/>
+          <elem attrs="xml:lang" tag="pnv:honorificSuffix"/>
+          <elem attrs="xml:lang" tag="pnv:disambiguatingDescription"/>
+          <elem attrs="xml:lang" tag="pnv:literalName"/>
+          <elem attrs="xml:lang" tag="nav:origineleNaam"/>			  
+        </elem>
+      </elem>	  
+    </elem>
+
+	<!-- Gedaagde -->
+    <elem attrs="rdf:about" tag="nav:Gedaagde">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+	  <elem attrs="xml:lang" tag="skos:prefLabel"/>	  
+      <elem attrs="xml:lang" tag="nav:functie"/>
+	  <elem attrs="xml:lang" tag="skos:regiment"/>	  
+      <elem attrs="xml:lang" tag="nav:rang"/>  
+      <elem attrs="xml:lang" tag="nav:compagnie"/>  	  
+	  <elem attrs="xml:lang, rdf:resource" tag="nav:heeftRol"/>	  
+      <elem attrs="rdf:about,rdf:parseType" tag="pnv:hasName">
+        <elem attrs="rdf:about,rdf:parseType" tag="pnv:PersonName">
+          <elem attrs="xml:lang" tag="skos:definition"/>
+          <elem attrs="xml:lang" tag="rdfs:label"/>
+          <elem attrs="rdf:resource,xml:lang" tag="pnv:nameSpecification"/>
+          <elem attrs="xml:lang" tag="pnv:initials"/>
+          <elem attrs="xml:lang" tag="pnv:prefix"/>
+          <elem attrs="xml:lang" tag="pnv:givenName"/>
+          <elem attrs="xml:lang" tag="pnv:givenNameSuffix"/>
+          <elem attrs="xml:lang" tag="pnv:firstName"/>
+          <elem attrs="xml:lang" tag="pnv:patronym"/>
+          <elem attrs="xml:lang" tag="pnv:infixTitle"/>
+          <elem attrs="xml:lang" tag="pnv:surnamePrefix"/>
+          <elem attrs="xml:lang" tag="pnv:baseSurname"/>
+          <elem attrs="xml:lang" tag="pnv:infix"/>
+          <elem attrs="xml:lang" tag="pnv:surname"/>
+          <elem attrs="xml:lang" tag="pnv:trailingPatronym"/>
+          <elem attrs="xml:lang" tag="pnv:suffix"/>
+          <elem attrs="xml:lang" tag="pnv:honorificSuffix"/>
+          <elem attrs="xml:lang" tag="pnv:disambiguatingDescription"/>
+          <elem attrs="xml:lang" tag="pnv:literalName"/>
+          <elem attrs="xml:lang" tag="nav:origineleNaam"/>			  
+        </elem>
+      </elem>	  
+    </elem>
+
+	<!-- Eiser -->
+    <elem attrs="rdf:about" tag="nav:Eiser">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+	  <elem attrs="xml:lang" tag="skos:prefLabel"/>	  
+      <elem attrs="xml:lang" tag="nav:functie"/>
+	  <elem attrs="xml:lang, rdf:resource" tag="nav:heeftRol"/>	  
+      <elem attrs="rdf:about,rdf:parseType" tag="pnv:hasName">
+        <elem attrs="rdf:about,rdf:parseType" tag="pnv:PersonName">
+          <elem attrs="xml:lang" tag="skos:definition"/>
+          <elem attrs="xml:lang" tag="rdfs:label"/>
+          <elem attrs="rdf:resource,xml:lang" tag="pnv:nameSpecification"/>
+          <elem attrs="xml:lang" tag="pnv:initials"/>
+          <elem attrs="xml:lang" tag="pnv:prefix"/>
+          <elem attrs="xml:lang" tag="pnv:givenName"/>
+          <elem attrs="xml:lang" tag="pnv:givenNameSuffix"/>
+          <elem attrs="xml:lang" tag="pnv:firstName"/>
+          <elem attrs="xml:lang" tag="pnv:patronym"/>
+          <elem attrs="xml:lang" tag="pnv:infixTitle"/>
+          <elem attrs="xml:lang" tag="pnv:surnamePrefix"/>
+          <elem attrs="xml:lang" tag="pnv:baseSurname"/>
+          <elem attrs="xml:lang" tag="pnv:infix"/>
+          <elem attrs="xml:lang" tag="pnv:surname"/>
+          <elem attrs="xml:lang" tag="pnv:trailingPatronym"/>
+          <elem attrs="xml:lang" tag="pnv:suffix"/>
+          <elem attrs="xml:lang" tag="pnv:honorificSuffix"/>
+          <elem attrs="xml:lang" tag="pnv:disambiguatingDescription"/>
+          <elem attrs="xml:lang" tag="pnv:literalName"/>
+          <elem attrs="xml:lang" tag="nav:origineleNaam"/>			  
+        </elem>
+      </elem>	  
+    </elem>
+
+	<!-- Militair -->
+    <elem attrs="rdf:about" tag="nav:Militair">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+	  <elem attrs="xml:lang" tag="skos:prefLabel"/>	  
+      <elem attrs="xml:lang" tag="schema:birthDate"/>
+      <elem attrs="xml:lang" tag="nav:rang"/>
+      <elem attrs="xml:lang" tag="nav:geboortedatumTekst"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftWapen"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftPlaatsVanHerkomst"/>
+      <elem attrs="xml:lang" tag="nav:legeronderdeel"/>
+      <elem attrs="xml:lang" tag="nav:regiment"/>
+      <elem attrs="xml:lang" tag="nav:bataljon"/>
+      <elem attrs="xml:lang" tag="nav:compagnie"/>
+      <elem attrs="xml:lang" tag="nav:laagsteJaar"/>
+      <elem attrs="xml:lang" tag="nav:hoogsteJaar"/>	  
+      <elem attrs="rdf:about,rdf:parseType" tag="pnv:hasName">
+        <elem attrs="rdf:about,rdf:parseType" tag="pnv:PersonName">
+          <elem attrs="xml:lang" tag="skos:definition"/>
+          <elem attrs="xml:lang" tag="rdfs:label"/>
+          <elem attrs="rdf:resource,xml:lang" tag="pnv:nameSpecification"/>
+          <elem attrs="xml:lang" tag="pnv:initials"/>
+          <elem attrs="xml:lang" tag="pnv:prefix"/>
+          <elem attrs="xml:lang" tag="pnv:givenName"/>
+          <elem attrs="xml:lang" tag="pnv:givenNameSuffix"/>
+          <elem attrs="xml:lang" tag="pnv:firstName"/>
+          <elem attrs="xml:lang" tag="pnv:patronym"/>
+          <elem attrs="xml:lang" tag="pnv:infixTitle"/>
+          <elem attrs="xml:lang" tag="pnv:surnamePrefix"/>
+          <elem attrs="xml:lang" tag="pnv:baseSurname"/>
+          <elem attrs="xml:lang" tag="pnv:infix"/>
+          <elem attrs="xml:lang" tag="pnv:surname"/>
+          <elem attrs="xml:lang" tag="pnv:trailingPatronym"/>
+          <elem attrs="xml:lang" tag="pnv:suffix"/>
+          <elem attrs="xml:lang" tag="pnv:honorificSuffix"/>
+          <elem attrs="xml:lang" tag="pnv:disambiguatingDescription"/>
+          <elem attrs="xml:lang" tag="pnv:literalName"/>
+          <elem attrs="xml:lang" tag="nav:origineleNaam"/>			  
+        </elem>
+      </elem>	  
+    </elem>
+
+	<!-- Geinterneerde -->
+    <elem attrs="rdf:about" tag="nav:Geinterneerde">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+	  <elem attrs="xml:lang" tag="skos:prefLabel"/>	  
+      <elem attrs="xml:lang" tag="schema:birthDate"/>
+      <elem attrs="xml:lang" tag="nav:nationaliteit"/>
+      <elem attrs="xml:lang" tag="nav:rang"/>
+      <elem attrs="xml:lang" tag="nav:eenheid"/>
+      <elem attrs="xml:lang" tag="nav:stamboeknummer"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftPlaatsVanGevangenneming"/>
+      <elem attrs="xml:lang" tag="nav:datumVanGevangenneming"/>
+      <elem attrs="xml:lang" tag="nav:functie"/>
+      <elem attrs="xml:lang" tag="nav:naamVader"/>
+      <elem attrs="xml:lang" tag="nav:naamMoeder"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftPlaatsVanHerkomst"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftPlaatsVanBestemming"/>
+      <elem attrs="xml:lang" tag="nav:opmerking"/>
+      <elem attrs="rdf:about,rdf:parseType" tag="pnv:hasName">
+        <elem attrs="rdf:about,rdf:parseType" tag="pnv:PersonName">
+          <elem attrs="xml:lang" tag="skos:definition"/>
+          <elem attrs="xml:lang" tag="rdfs:label"/>
+          <elem attrs="rdf:resource,xml:lang" tag="pnv:nameSpecification"/>
+          <elem attrs="xml:lang" tag="pnv:initials"/>
+          <elem attrs="xml:lang" tag="pnv:prefix"/>
+          <elem attrs="xml:lang" tag="pnv:givenName"/>
+          <elem attrs="xml:lang" tag="pnv:givenNameSuffix"/>
+          <elem attrs="xml:lang" tag="pnv:firstName"/>
+          <elem attrs="xml:lang" tag="pnv:patronym"/>
+          <elem attrs="xml:lang" tag="pnv:infixTitle"/>
+          <elem attrs="xml:lang" tag="pnv:surnamePrefix"/>
+          <elem attrs="xml:lang" tag="pnv:baseSurname"/>
+          <elem attrs="xml:lang" tag="pnv:infix"/>
+          <elem attrs="xml:lang" tag="pnv:surname"/>
+          <elem attrs="xml:lang" tag="pnv:trailingPatronym"/>
+          <elem attrs="xml:lang" tag="pnv:suffix"/>
+          <elem attrs="xml:lang" tag="pnv:honorificSuffix"/>
+          <elem attrs="xml:lang" tag="pnv:disambiguatingDescription"/>
+          <elem attrs="xml:lang" tag="pnv:literalName"/>
+          <elem attrs="xml:lang" tag="nav:origineleNaam"/>			  
+        </elem>
+      </elem>	  
+    </elem>	
+
+	<!-- Gedetineerde -->
+    <elem attrs="rdf:about" tag="nav:Gedetineerde">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+	  <elem attrs="xml:lang" tag="skos:prefLabel"/>	  
+      <elem attrs="xml:lang" tag="nav:cellen"/>
+      <elem attrs="xml:lang" tag="nav:ontslagDatum"/>
+      <elem attrs="xml:lang" tag="nav:inschrijfDatumTekst"/>
+      <elem attrs="xml:lang" tag="nav:onderwijs"/>
+      <elem attrs="xml:lang" tag="nav:eerdereStraf"/>
+      <elem attrs="xml:lang" tag="nav:gedrag"/>
+      <elem attrs="xml:lang" tag="nav:aangezicht"/>
+      <elem attrs="xml:lang" tag="nav:baard"/>
+      <elem attrs="xml:lang" tag="nav:bijzondereTekenen"/>
+      <elem attrs="xml:lang" tag="schema:birthDate"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftGeboorteplaats"/>
+      <elem attrs="xml:lang" tag="nav:geloof"/>
+      <elem attrs="xml:lang" tag="nav:haarkleur"/>
+      <elem attrs="xml:lang" tag="nav:huwelijkseStaat"/>
+      <elem attrs="xml:lang" tag="nav:kin"/>
+      <elem attrs="xml:lang" tag="nav:leeftijd"/>
+      <elem attrs="xml:lang" tag="nav:lengte"/>
+      <elem attrs="xml:lang" tag="nav:naamMoeder"/>
+      <elem attrs="xml:lang" tag="nav:mond"/>
+      <elem attrs="xml:lang" tag="nav:nationaliteit"/>
+      <elem attrs="xml:lang" tag="nav:neus"/>
+      <elem attrs="xml:lang" tag="nav:ogen"/>
+      <elem attrs="xml:lang" tag="nav:taal"/>
+      <elem attrs="xml:lang" tag="nav:naamVader"/>
+      <elem attrs="xml:lang" tag="nav:voorhoofd"/>
+      <elem attrs="xml:lang" tag="nav:wenkbrauwen"/>
+      <elem attrs="xml:lang" tag="nav:functie"/>
+      <elem attrs="rdf:about,rdf:parseType" tag="pnv:hasName">
+        <elem attrs="rdf:about,rdf:parseType" tag="pnv:PersonName">
+          <elem attrs="xml:lang" tag="skos:definition"/>
+          <elem attrs="xml:lang" tag="rdfs:label"/>
+          <elem attrs="rdf:resource,xml:lang" tag="pnv:nameSpecification"/>
+          <elem attrs="xml:lang" tag="pnv:initials"/>
+          <elem attrs="xml:lang" tag="pnv:prefix"/>
+          <elem attrs="xml:lang" tag="pnv:givenName"/>
+          <elem attrs="xml:lang" tag="pnv:givenNameSuffix"/>
+          <elem attrs="xml:lang" tag="pnv:firstName"/>
+          <elem attrs="xml:lang" tag="pnv:patronym"/>
+          <elem attrs="xml:lang" tag="pnv:infixTitle"/>
+          <elem attrs="xml:lang" tag="pnv:surnamePrefix"/>
+          <elem attrs="xml:lang" tag="pnv:baseSurname"/>
+          <elem attrs="xml:lang" tag="pnv:infix"/>
+          <elem attrs="xml:lang" tag="pnv:surname"/>
+          <elem attrs="xml:lang" tag="pnv:trailingPatronym"/>
+          <elem attrs="xml:lang" tag="pnv:suffix"/>
+          <elem attrs="xml:lang" tag="pnv:honorificSuffix"/>
+          <elem attrs="xml:lang" tag="pnv:disambiguatingDescription"/>
+          <elem attrs="xml:lang" tag="pnv:literalName"/>
+          <elem attrs="xml:lang" tag="nav:origineleNaam"/>			  
+        </elem>
+      </elem>	  
+    </elem>	
+
+	<!-- Gedecoreerde -->
+    <elem attrs="rdf:about" tag="nav:Gedecoreerde">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+	  <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="schema:birthDate"/>
+      <elem attrs="xml:lang" tag="nav:orde"/>
+	  <elem attrs="xml:lang" tag="nav:graad"/>
+      <elem attrs="rdf:about,rdf:parseType" tag="pnv:hasName">
+        <elem attrs="rdf:about,rdf:parseType" tag="pnv:PersonName">
+          <elem attrs="xml:lang" tag="skos:definition"/>
+          <elem attrs="xml:lang" tag="rdfs:label"/>
+          <elem attrs="rdf:resource,xml:lang" tag="pnv:nameSpecification"/>
+          <elem attrs="xml:lang" tag="pnv:initials"/>
+          <elem attrs="xml:lang" tag="pnv:prefix"/>
+          <elem attrs="xml:lang" tag="pnv:givenName"/>
+          <elem attrs="xml:lang" tag="pnv:givenNameSuffix"/>
+          <elem attrs="xml:lang" tag="pnv:firstName"/>
+          <elem attrs="xml:lang" tag="pnv:patronym"/>
+          <elem attrs="xml:lang" tag="pnv:infixTitle"/>
+          <elem attrs="xml:lang" tag="pnv:surnamePrefix"/>
+          <elem attrs="xml:lang" tag="pnv:baseSurname"/>
+          <elem attrs="xml:lang" tag="pnv:infix"/>
+          <elem attrs="xml:lang" tag="pnv:surname"/>
+          <elem attrs="xml:lang" tag="pnv:trailingPatronym"/>
+          <elem attrs="xml:lang" tag="pnv:suffix"/>
+          <elem attrs="xml:lang" tag="pnv:honorificSuffix"/>
+          <elem attrs="xml:lang" tag="pnv:disambiguatingDescription"/>
+          <elem attrs="xml:lang" tag="pnv:literalName"/>
+          <elem attrs="xml:lang" tag="nav:origineleNaam"/>			  
+        </elem>
+      </elem>	  
+    </elem>	
+
+	<!-- Dader -->
+    <elem attrs="rdf:about" tag="nav:Dader">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+	  <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftWoonplaats"/>
+	  <elem attrs="xml:lang, rdf:resource" tag="nav:heeftDelict"/>
+	  <elem attrs="xml:lang, rdf:resource" tag="nav:heeftSlachtoffer"/>
+      <elem attrs="rdf:about,rdf:parseType" tag="pnv:hasName">
+        <elem attrs="rdf:about,rdf:parseType" tag="pnv:PersonName">
+          <elem attrs="xml:lang" tag="skos:definition"/>
+          <elem attrs="xml:lang" tag="rdfs:label"/>
+          <elem attrs="rdf:resource,xml:lang" tag="pnv:nameSpecification"/>
+          <elem attrs="xml:lang" tag="pnv:initials"/>
+          <elem attrs="xml:lang" tag="pnv:prefix"/>
+          <elem attrs="xml:lang" tag="pnv:givenName"/>
+          <elem attrs="xml:lang" tag="pnv:givenNameSuffix"/>
+          <elem attrs="xml:lang" tag="pnv:firstName"/>
+          <elem attrs="xml:lang" tag="pnv:patronym"/>
+          <elem attrs="xml:lang" tag="pnv:infixTitle"/>
+          <elem attrs="xml:lang" tag="pnv:surnamePrefix"/>
+          <elem attrs="xml:lang" tag="pnv:baseSurname"/>
+          <elem attrs="xml:lang" tag="pnv:infix"/>
+          <elem attrs="xml:lang" tag="pnv:surname"/>
+          <elem attrs="xml:lang" tag="pnv:trailingPatronym"/>
+          <elem attrs="xml:lang" tag="pnv:suffix"/>
+          <elem attrs="xml:lang" tag="pnv:honorificSuffix"/>
+          <elem attrs="xml:lang" tag="pnv:disambiguatingDescription"/>
+          <elem attrs="xml:lang" tag="pnv:literalName"/>
+          <elem attrs="xml:lang" tag="nav:origineleNaam"/>		  
+        </elem>
+      </elem>	  
+    </elem>	
+
+	<!-- Slachtoffer -->
+    <elem attrs="rdf:about" tag="nav:Slachtoffer">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+	  <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="rdf:about,rdf:parseType" tag="pnv:hasName">
+        <elem attrs="rdf:about,rdf:parseType" tag="pnv:PersonName">
+          <elem attrs="xml:lang" tag="skos:definition"/>
+          <elem attrs="xml:lang" tag="rdfs:label"/>
+          <elem attrs="rdf:resource,xml:lang" tag="pnv:nameSpecification"/>
+          <elem attrs="xml:lang" tag="pnv:initials"/>
+          <elem attrs="xml:lang" tag="pnv:prefix"/>
+          <elem attrs="xml:lang" tag="pnv:givenName"/>
+          <elem attrs="xml:lang" tag="pnv:givenNameSuffix"/>
+          <elem attrs="xml:lang" tag="pnv:firstName"/>
+          <elem attrs="xml:lang" tag="pnv:patronym"/>
+          <elem attrs="xml:lang" tag="pnv:infixTitle"/>
+          <elem attrs="xml:lang" tag="pnv:surnamePrefix"/>
+          <elem attrs="xml:lang" tag="pnv:baseSurname"/>
+          <elem attrs="xml:lang" tag="pnv:infix"/>
+          <elem attrs="xml:lang" tag="pnv:surname"/>
+          <elem attrs="xml:lang" tag="pnv:trailingPatronym"/>
+          <elem attrs="xml:lang" tag="pnv:suffix"/>
+          <elem attrs="xml:lang" tag="pnv:honorificSuffix"/>
+          <elem attrs="xml:lang" tag="pnv:disambiguatingDescription"/>
+          <elem attrs="xml:lang" tag="pnv:literalName"/>
+          <elem attrs="xml:lang" tag="nav:origineleNaam"/>			  
+        </elem>
+      </elem>	  
+    </elem>	
+	<!-- ================================ EIND PERSONEN CLASSES ================================ -->	
+	
+	
+	<!-- ================================ SPECIFIEKE CLASSES ================================ -->	
+	<!-- Object -->
+    <elem attrs="rdf:about" tag="nav:Object">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="dc:description"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftBenoemde"/>		  
+    </elem>		
+	
+	<!-- Boedel -->
+    <elem attrs="rdf:about" tag="nav:Boedel">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="dct:date"/>
+      <elem attrs="xml:lang" tag="nav:beheerder"/>
+      <elem attrs="xml:lang" tag="nav:bijzonderheden"/>
+      <elem attrs="xml:lang" tag="nav:boedelVan"/>
+      <elem attrs="xml:lang" tag="nav:jongsteStuk"/>
+      <elem attrs="xml:lang" tag="nav:onroerendeGoederen"/>
+      <elem attrs="xml:lang" tag="nav:oudsteStuk"/>
+      <elem attrs="xml:lang" tag="nav:roerendeGoederen"/>	  
+    </elem>			
+
+	<!-- Decreet -->
+    <elem attrs="rdf:about" tag="nav:Decreet">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="nav:hoofdterm"/>
+      <elem attrs="xml:lang" tag="nav:term"/>
+      <elem attrs="xml:lang" tag="nav:eigenaar"/>
+      <elem attrs="xml:lang" tag="nav:impetrant"/>
+      <elem attrs="xml:lang" tag="nav:koper"/>
+      <elem attrs="xml:lang" tag="nav:opposant"/>
+      <elem attrs="xml:lang" tag="nav:goederen"/>
+      <elem attrs="xml:lang" tag="nav:willigheid"/>
+      <elem attrs="xml:lang" tag="nav:verwijzingAkte"/>
+      <elem attrs="xml:lang" tag="nav:dagverhaal"/>
+    </elem>	
+
+	<!-- Functie -->
+    <elem attrs="rdf:about" tag="nav:Functie">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="nav:persoonId"/>
+      <elem attrs="xml:lang" tag="dc:description"/>	  
+      <elem attrs="xml:lang" tag="nav:partijStroming"/>
+      <elem attrs="xml:lang" tag="nav:kabinet"/>
+      <elem attrs="xml:lang" tag="edm:begin"/>
+      <elem attrs="xml:lang" tag="edm:end"/>
+      <elem attrs="xml:lang" tag="nav:partij"/>
+      <elem attrs="xml:lang" tag="dc:description"/>
+      <elem attrs="xml:lang" tag="nav:kabinetId"/>
+	  <elem attrs="xml:lang" tag="nav:bewindspersoonId"/>	
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftPersoon"/>	  
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftBewindspersoon"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftKabinet"/>	  
+    </elem>		
+		
+	<!-- Delict -->
+    <elem attrs="rdf:about" tag="nav:Delict">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="dct:date"/>
+      <elem attrs="xml:lang" tag="nav:opmerking"/>
+      <elem attrs="xml:lang" tag="nav:strafmaat"/>
+      <elem attrs="xml:lang" tag="dc:description"/>
+      <elem attrs="xml:lang" tag="nav:geheimregisternummer"/>
+      <elem attrs="xml:lang" tag="nav:vervroegdOntslag"/>
+	  <elem attrs="xml:lang" tag="nav:jurisdictie"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftPlaatsVanRechtbank"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftPlaatsnaam"/>	  
+    </elem>	
+	
+	<!-- Gratie -->
+    <elem attrs="rdf:about" tag="nav:Gratie">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="nav:datumInterinement"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftPlaatsnaam"/>
+      <elem attrs="xml:lang" tag="nav:gratieverlener"/>
+      <elem attrs="xml:lang" tag="nav:gedagvaardeOfficier"/>
+      <elem attrs="xml:lang" tag="nav:daderGevangen"/>
+      <elem attrs="xml:lang" tag="nav:verzoening"/>
+      <elem attrs="xml:lang" tag="nav:amendeCiviel"/>
+      <elem attrs="xml:lang" tag="nav:bijzonderheden"/>
+      <elem attrs="xml:lang" tag="nav:soortGratie"/>
+      <elem attrs="xml:lang" tag="nav:gelegenheid"/>
+      <elem attrs="xml:lang" tag="nav:adviesGevraagdAan"/>
+      <elem attrs="xml:lang" tag="nav:redenGeenVerzoening"/>
+      <elem attrs="xml:lang" tag="nav:blijdeInkomste"/>
+      <elem attrs="xml:lang" tag="nav:datumBeschikking"/>
+      <elem attrs="xml:lang" tag="nav:opmerking"/>
+      <elem attrs="xml:lang" tag="nav:suppliant"/>
+      <elem attrs="xml:lang" tag="nav:amendeHonorable"/>
+      <elem attrs="xml:lang" tag="nav:oppossitieProcureurGeneraal"/>
+      <elem attrs="xml:lang" tag="nav:datumRemissie"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftDelict"/>	  
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftDader"/>
+    </elem>	
+
+	<!-- Octrooi -->
+    <elem attrs="rdf:about" tag="nav:Octrooi">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftPlaatsnaam"/>
+      <elem attrs="xml:lang" tag="nav:object"/>
+      <elem attrs="xml:lang" tag="nav:hoofdrubriek"/>
+      <elem attrs="xml:lang" tag="dc:description"/>
+      <elem attrs="xml:lang" tag="nav:opmerking"/>
+      <elem attrs="xml:lang" tag="nav:betrokkene"/>
+      <elem attrs="xml:lang" tag="nav:functie"/>
+      <elem attrs="xml:lang" tag="nav:subrubriek"/>
+    </elem>		
+	
+	<!-- Project -->
+    <elem attrs="rdf:about" tag="nav:Project">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:landcode"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftLocatie"/>
+      <elem attrs="xml:lang" tag="dc:description"/>
+      <elem attrs="xml:lang" tag="nav:partners"/>
+      <elem attrs="xml:lang" tag="nav:financieleAfsluiting"/>
+      <elem attrs="xml:lang" tag="nav:datumOpdracht"/>
+      <elem attrs="xml:lang" tag="nav:invoerdatumTekst"/>
+      <elem attrs="xml:lang" tag="nav:invoerdatum"/>
+    </elem>		
+	
+	<!-- Ordonnantie -->
+    <elem attrs="rdf:about" tag="nav:Ordonnantie">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftPlaatsnaam"/>
+	  <elem attrs="xml:lang" tag="nav:domein"/>
+      <elem attrs="xml:lang" tag="dct:date"/>
+      <elem attrs="xml:lang" tag="dc:description"/>
+    </elem>	
+
+	<!-- Domein -->
+    <elem attrs="rdf:about" tag="nav:Domein">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="nav:register"/>
+      <elem attrs="xml:lang" tag="dc:description"/>
+      <elem attrs="xml:lang" tag="nav:voorlopignummer"/>
+      <elem attrs="xml:lang" tag="nav:nummer"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftGemeente"/>
+      <elem attrs="xml:lang" tag="nav:goed"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftLocatie"/>
+      <elem attrs="xml:lang" tag="nav:grootte"/>
+      <elem attrs="xml:lang" tag="nav:afkomstigVan"/>
+	  <elem attrs="xml:lang" tag="nav:Domein.nav:datumVeilingTekst"/>
+      <elem attrs="xml:lang" tag="nav:datumVeiling"/>
+      <elem attrs="xml:lang" tag="nav:koper"/>	  
+	  <elem attrs="xml:lang, rdf:resource" tag="nav:heeftPlaatsnaam"/>
+    </elem>		
+	
+	<!-- Proces -->
+    <elem attrs="rdf:about" tag="nav:Proces">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="nav:sententiedatum"/>
+      <elem attrs="xml:lang" tag="nav:approbatiedatum"/>
+      <elem attrs="xml:lang" tag="nav:misdrijf"/>
+      <elem attrs="xml:lang" tag="nav:krijgsraad"/>
+      <elem attrs="xml:lang" tag="nav:geschil"/>
+	  <elem attrs="xml:lang, rdf:resource" tag="nav:heeftEiser"/>
+	  <elem attrs="xml:lang, rdf:resource" tag="nav:heeftGedaagde"/>
+    </elem>	
+
+	<!-- Bedrijf -->
+    <elem attrs="rdf:about" tag="nav:Bedrijf">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="dc:description"/>
+      <elem attrs="xml:lang" tag="nav:dossiernummer"/>
+	  <elem attrs="xml:lang, rdf:resource" tag="nav:heeftRegio"/>
+	  <elem attrs="xml:lang, rdf:resource" tag="nav:heeftVestigingsplaats"/>
+    </elem>	
+	
+	<!-- Bewindspersoonsarchief -->
+    <elem attrs="rdf:about" tag="nav:Bewindspersoonsarchief">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="nav:soortArchief"/>
+      <elem attrs="xml:lang" tag="nav:openbaarheid"/>
+      <elem attrs="xml:lang" tag="nav:archiefNaam"/>
+      <elem attrs="xml:lang" tag="nav:archiefOmvang"/>
+      <elem attrs="xml:lang" tag="edm:begin"/>
+      <elem attrs="xml:lang" tag="edm:end"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftBewindspersoonarchiefinstelling"/>
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftBewindspersoon"/>
+      <elem attrs="xml:lang" tag="nav:toegangsnummer"/>
+      <elem attrs="xml:lang" tag="nav:bewindspersoonId"/>
+    </elem>		
+
+	<!-- Bewindspersoonsarchiefinstelling -->
+    <elem attrs="rdf:about" tag="nav:Bewindspersoonsarchiefinstelling">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="dc:description"/>
+      <elem attrs="xml:lang" tag="nav:adres"/>
+      <elem attrs="xml:lang" tag="nav:postcode"/>
+      <elem attrs="xml:lang" tag="nav:telefoon"/>
+      <elem attrs="xml:lang" tag="nav:emailadres"/>  
+      <elem attrs="xml:lang, rdf:resource" tag="nav:heeftPlaatsnaam"/>
+    </elem>
+
+	<!-- Vonnis -->
+    <elem attrs="rdf:about" tag="nav:Vonnis">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="nav:opmerking"/>
+      <elem attrs="xml:lang" tag="nav:misdrijf"/>
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="nav:sententiedatum"/>
+      <elem attrs="xml:lang" tag="nav:maand"/>
+      <elem attrs="xml:lang" tag="nav:jaar"/>
+      <elem attrs="xml:lang" tag="edm:begin"/>
+      <elem attrs="xml:lang" tag="edm:end"/>
+    </elem>
+
+	<!-- Leen -->
+    <elem attrs="rdf:about" tag="nav:Leen">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="nao:volgnummer"/>
+    </elem>
+	
+	<!-- Kabinet -->
+    <elem attrs="rdf:about" tag="nav:Kabinet">
+	  <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="dc:description"/>
+      <elem attrs="xml:lang" tag="nav:startDatum"/>
+      <elem attrs="xml:lang" tag="nav:eindDatum"/>
+    </elem>
+	<!-- ================================ EIND SPECIFIEKE CLASSES ================================ -->	
+	
+	
+	<!-- ================================ ADDITIONELE CLASSES ================================ -->
+       
+	<!-- hg:PlaceInTime -->
+	<elem tag="hg:PlaceInTime" attrs="rdf:about">
+		<elem tag="dcterms:type" attrs="rdf:resource,xml:lang"/>
+		<elem tag="rdfs:label" attrs="xml:lang"/>
+		<elem tag="skos:prefLabel" attrs="xml:lang"/>
+		<elem attrs="xml:lang" tag="nav:jurisdictie"/>
+		<elem tag="hg:liesIn" attrs="rdf:resource"/>
+	</elem>
+     
+	<!-- skos:Concept -->
+    <elem attrs="rdf:about" tag="skos:Concept">
+      <elem attrs="xml:lang" tag="rdfs:label"/>
+      <elem attrs="xml:lang" tag="skos:prefLabel"/>
+      <elem attrs="xml:lang" tag="skos:altLabel"/>
+      <elem attrs="xml:lang" tag="skos:hiddenLabel"/>
+      <elem attrs="xml:lang" tag="skos:note"/>
+      <elem attrs="rdf:resource,xml:lang" tag="skos:inScheme"/>
+      <elem attrs="rdf:resource" tag="owl:sameAs"/>
+      <elem attrs="rdf:about" tag="rdfs:seeAlso"/>
+    </elem>
+	
+	<!-- ================================ EIND ADDITIONELE CLASSES ================================ -->
+	
+  </root>
+ <!-- 
+ CHANGELOG
+ 
+2-3-2022
+- Verwijderd edm:WebResource + nao:Agent. Deze clases worden niet gebruikt binnen NT's
+- nav:Functie was dubbel in de recdef. Deze zijn nu gemerged waardoor er één nav:Functie is.
+-->
+ 
+<!-- END - root -->
+  <field-markers/>
+  <opts/>
+  <docs><!-- Voorbeeld voor het toepassen van instructies<doc path="/nant:RDF/ore:Aggregation"><para name="Label">ore:Aggregation</para><para name="Definition">ore:Aggregation komt mogelijk te vervallen en wordt niet in de nieuwe record definitions niet meer gebruikt. RecordAggregation is het startpunt van de mapping en hard aan Pockets gekoppeld.</para></doc>--></docs>
+</record-definition>
